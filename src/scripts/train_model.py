@@ -1,0 +1,71 @@
+import pickle
+from typing import Any
+
+import pandas as pd
+from sklearn.compose import ColumnTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import accuracy_score, classification_report, f1_score
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import MaxAbsScaler
+from sklearn.svm import LinearSVC
+
+from src.config import DEFAULT_CONSOLIDATED_DATASET, MODEL_PATH
+from src.ml.features import FeatureBuilder
+
+
+SEED = 42
+
+
+def train_model() -> None:
+    preprocessor = ColumnTransformer(
+        transformers=[
+            (
+                "text_tfidf",
+                TfidfVectorizer(stop_words="english", ngram_range=(1, 2), min_df=2),
+                "clean_text",
+            ),
+            ("numeric_data", MaxAbsScaler(), FeatureBuilder.NUMERIC_COLUMNS),
+        ]
+    )
+
+    pipeline: Pipeline = Pipeline(
+        steps=[
+            ("feature_builder", FeatureBuilder()),
+            ("preprocessor", preprocessor),
+            ("classifier", LinearSVC(random_state=SEED)),
+        ]
+    )
+
+    dataset = pd.read_csv(DEFAULT_CONSOLIDATED_DATASET)
+    X_train, X_test, y_train, y_test = train_test_split(
+        dataset["TEXT"],
+        dataset["LABEL"],
+        test_size=0.2,
+        random_state=SEED,
+        stratify=dataset["LABEL"],
+    )
+
+    pipeline.fit(X_train, y_train)
+
+    predictions = pipeline.predict(X_test)
+    metrics: dict[str, Any] = {
+        "accuracy": accuracy_score(y_test, predictions),
+        "macro_f1": f1_score(y_test, predictions, average="macro"),
+    }
+
+    MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with MODEL_PATH.open("wb") as file:
+        pickle.dump(pipeline, file)
+
+    print(classification_report(y_test, predictions, digits=4))
+    print(f"Saved trained model to {MODEL_PATH}")
+    print(f"Metrics: {metrics}")
+
+
+def main() -> None:
+    train_model()
+
+
+if __name__ == "__main__":
+    main()

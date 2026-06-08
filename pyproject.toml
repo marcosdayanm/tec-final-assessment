@@ -1,0 +1,22 @@
+[project]
+name = "tec-final-assessment"
+version = "0.1.0"
+description = "SMS classification ML workflow"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.2.0",
+    "scikit-learn>=1.7.0",
+]
+
+[project.scripts]
+train-sms-model = "src.scripts.train_model:main"
+
+[build-system]
+requires = ["setuptools>=80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "."}
+
+[tool.setuptools.packages.find]
+where = ["."]
