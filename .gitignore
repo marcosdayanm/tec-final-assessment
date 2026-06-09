@@ -225,3 +225,16 @@ __marimo__/
 data/app.db
 data/raw/
 data/models/
+*.pkl
+
+# Frontend — Node / Vite
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+
+# macOS
+.DS_Store
+**/.DS_Store
