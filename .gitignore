@@ -49,6 +49,7 @@ coverage.xml
 *.py.cover
 .hypothesis/
 .pytest_cache/
+backend/.pytest_cache/
 cover/
 
 # Translations
@@ -100,6 +101,7 @@ ipython_config.py
 #   commonly ignored for libraries.
 # uv.lock
 .uv-cache/
+backend/.uv-cache/
 
 # poetry
 #   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
@@ -152,6 +154,7 @@ activemq-data/
 .env
 .envrc
 .venv
+backend/.venv/
 env/
 venv/
 ENV/
@@ -206,6 +209,7 @@ tempCodeRunnerFile.py
 
 # Ruff stuff:
 .ruff_cache/
+backend/.ruff_cache/
 
 # PyPI configuration file
 .pypirc
@@ -222,6 +226,7 @@ __marimo__/
 # App
 
 # Data
-data/app.db
-data/raw/
-data/models/
+backend/data/app.db
+backend/data/models/
+backend/data/raw/
+backend/tec_final_assessment.egg-info/
