@@ -1,15 +1,15 @@
 import { useState } from "react";
-import type { User } from "../types";
+import { login, register } from "../api/chat";
+import type { SessionUser } from "../types";
 import "./Login.css";
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
-
 interface Props {
-  onLogin: (user: User) => void;
+  onLogin: (user: SessionUser) => void;
 }
 
 export function Login({ onLogin }: Props) {
-  const [email, setEmail] = useState("");
+  const [mode, setMode] = useState<"login" | "register">("login");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,26 +20,15 @@ export function Login({ onLogin }: Props) {
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!res.ok) {
-        setError("Correo o contraseña incorrectos.");
-        return;
-      }
-
-      const data = await res.json();
-      onLogin({ email, token: data.token as string });
-    } catch {
-      // For development without a backend, allow any login
-      if (import.meta.env.DEV) {
-        onLogin({ email, token: "dev-token" });
-      } else {
-        setError("No se pudo conectar al servidor.");
-      }
+      const payload = { username, password };
+      const authResponse = mode === "login" ? await login(payload) : await register(payload);
+      onLogin({ ...authResponse.user, token: authResponse.token });
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "No se pudo conectar al servidor."
+      );
     } finally {
       setLoading(false);
     }
@@ -55,19 +44,36 @@ export function Login({ onLogin }: Props) {
           <p className="login-brand__sub">Mensajería con detección de amenazas</p>
         </div>
 
+        <div className="login-mode-switch">
+          <button
+            className={`login-mode-switch__btn ${mode === "login" ? "login-mode-switch__btn--active" : ""}`}
+            type="button"
+            onClick={() => setMode("login")}
+          >
+            Iniciar sesión
+          </button>
+          <button
+            className={`login-mode-switch__btn ${mode === "register" ? "login-mode-switch__btn--active" : ""}`}
+            type="button"
+            onClick={() => setMode("register")}
+          >
+            Crear cuenta
+          </button>
+        </div>
+
         {/* Form */}
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="form-field">
-            <label htmlFor="email" className="form-label">Correo electrónico</label>
+            <label htmlFor="username" className="form-label">Usuario</label>
             <input
-              id="email"
-              type="email"
+              id="username"
+              type="text"
               className="form-input"
-              placeholder="usuario@tec.mx"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              placeholder="usuario_tec"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
-              autoComplete="email"
+              autoComplete="username"
             />
           </div>
 
@@ -88,12 +94,12 @@ export function Login({ onLogin }: Props) {
           {error && <p className="login-error">{error}</p>}
 
           <button className="login-btn" type="submit" disabled={loading}>
-            {loading ? "Entrando…" : "Entrar"}
+            {loading ? "Procesando…" : mode === "login" ? "Entrar" : "Crear cuenta"}
           </button>
         </form>
 
         <p className="login-hint">
-          En modo desarrollo puedes usar cualquier correo y contraseña.
+          Usa el mismo usuario y contraseña que registraste en el backend.
         </p>
       </div>
     </div>

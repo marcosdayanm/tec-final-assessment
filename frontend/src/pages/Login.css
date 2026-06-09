@@ -52,6 +52,31 @@
   gap: 1rem;
 }
 
+.login-mode-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.login-mode-switch__btn {
+  border: 1px solid #2e2e48;
+  background: #0f0f1a;
+  color: #94a3b8;
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.login-mode-switch__btn--active {
+  border-color: #4f46e5;
+  background: rgba(79, 70, 229, 0.15);
+  color: #e2e2f0;
+}
+
 .form-field {
   display: flex;
   flex-direction: column;

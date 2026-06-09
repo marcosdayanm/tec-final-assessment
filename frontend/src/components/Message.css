@@ -49,6 +49,9 @@
 
 /* Label / warning badge */
 .msg-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   font-size: 0.75rem;
   padding: 0.25rem 0.65rem;
   border-radius: 999px;
@@ -58,12 +61,6 @@
   letter-spacing: 0.01em;
 }
 
-.label-real {
-  background: #0d2d1a;
-  color: #4ade80;
-  border: 1px solid #166534;
-}
-
 .label-spam {
   background: #2d1a00;
   color: #fb923c;
@@ -71,17 +68,11 @@
   animation: pulse 1.5s ease-in-out 2;
 }
 
-.label-phishing {
+.label-smishing {
   background: #2d0a0a;
   color: #f87171;
   border: 1px solid #991b1b;
   animation: pulse 1s ease-in-out 3;
-}
-
-.label-pending {
-  background: #1a1a2e;
-  color: #94a3b8;
-  border: 1px solid #334155;
 }
 
 @keyframes pulse {

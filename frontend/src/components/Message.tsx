@@ -1,55 +1,50 @@
-import type { Message, MessageLabel } from "../types";
+import type { ClassificationLabel, UiMessage } from "../types";
 import "./Message.css";
 
 interface Props {
-  message: Message;
+  message: UiMessage;
 }
 
 const LABEL_CONFIG: Record<
-  MessageLabel,
+  ClassificationLabel,
   { text: string; className: string; icon: string }
 > = {
+  ham: {
+    text: "Mensaje normal",
+    className: "label-ham",
+    icon: "✅",
+  },
   spam: {
-    text: "⚠️ Posible SPAM",
+    text: "Posible spam",
     className: "label-spam",
     icon: "🚫",
   },
-  phishing: {
-    text: "🎣 PHISHING detectado — no hagas clic en enlaces",
-    className: "label-phishing",
+  smishing: {
+    text: "Posible smishing",
+    className: "label-smishing",
     icon: "☠️",
-  },
-  real: {
-    text: "✅ Mensaje legítimo",
-    className: "label-real",
-    icon: "✅",
-  },
-  pending: {
-    text: "Analizando...",
-    className: "label-pending",
-    icon: "⏳",
   },
 };
 
-function formatTime(date: Date) {
-  return date.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
+function formatTime(dateValue: string) {
+  return new Date(dateValue).toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" });
 }
 
 export function MessageBubble({ message }: Props) {
-  const isMe = message.sender === "me";
-  const label = message.label ? LABEL_CONFIG[message.label] : null;
-  const showWarning = message.label && message.label !== "real";
+  const isMe = message.direction === "me";
+  const label = LABEL_CONFIG[message.classificationLabel];
+  const showWarning = message.classificationLabel === "spam" || message.classificationLabel === "smishing";
 
   return (
     <div className={`msg-row ${isMe ? "msg-row--me" : "msg-row--other"}`}>
       <div className={`msg-bubble ${isMe ? "msg-bubble--me" : "msg-bubble--other"}`}>
-        <p className="msg-text">{message.text}</p>
-        <span className="msg-time">{formatTime(message.timestamp)}</span>
+        <p className="msg-text">{message.content}</p>
+        <span className="msg-time">{formatTime(message.createdAt)}</span>
       </div>
 
-      {/* Only show label for incoming messages */}
-      {!isMe && label && (
+      {!isMe && showWarning && (
         <div className={`msg-label ${label.className} ${showWarning ? "msg-label--warn" : ""}`}>
+          <span className="msg-label__icon">{label.icon}</span>
           {label.text}
         </div>
       )}
