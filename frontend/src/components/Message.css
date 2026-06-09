@@ -39,26 +39,31 @@
   word-break: break-word;
 }
 
+.msg-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+}
+
 .msg-time {
-  display: block;
   font-size: 0.68rem;
-  margin-top: 0.25rem;
   opacity: 0.55;
-  text-align: right;
+  white-space: nowrap;
 }
 
 /* Label / warning badge */
 .msg-label {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  font-size: 0.75rem;
-  padding: 0.25rem 0.65rem;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
   border-radius: 999px;
-  margin-top: 0.3rem;
-  margin-left: 0.5rem;
   font-weight: 600;
   letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
 .label-spam {

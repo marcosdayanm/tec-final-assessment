@@ -39,15 +39,16 @@ export function MessageBubble({ message }: Props) {
     <div className={`msg-row ${isMe ? "msg-row--me" : "msg-row--other"}`}>
       <div className={`msg-bubble ${isMe ? "msg-bubble--me" : "msg-bubble--other"}`}>
         <p className="msg-text">{message.content}</p>
-        <span className="msg-time">{formatTime(message.createdAt)}</span>
-      </div>
-
-      {!isMe && showWarning && (
-        <div className={`msg-label ${label.className} ${showWarning ? "msg-label--warn" : ""}`}>
-          <span className="msg-label__icon">{label.icon}</span>
-          {label.text}
+        <div className="msg-footer">
+          {!isMe && showWarning && (
+            <span className={`msg-label ${label.className}`}>
+              <span className="msg-label__icon">{label.icon}</span>
+              {label.text}
+            </span>
+          )}
+          <span className="msg-time">{formatTime(message.createdAt)}</span>
         </div>
-      )}
+      </div>
     </div>
   );
 }
