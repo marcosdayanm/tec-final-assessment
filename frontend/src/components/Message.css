@@ -1,0 +1,90 @@
+.msg-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.25rem;
+}
+
+.msg-row--me {
+  align-items: flex-end;
+}
+
+.msg-row--other {
+  align-items: flex-start;
+}
+
+.msg-bubble {
+  max-width: 65%;
+  padding: 0.6rem 0.9rem;
+  border-radius: 18px;
+  position: relative;
+}
+
+.msg-bubble--me {
+  background: #4f46e5;
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.msg-bubble--other {
+  background: #1e1e2e;
+  color: #e2e2f0;
+  border-bottom-left-radius: 4px;
+  border: 1px solid #2e2e42;
+}
+
+.msg-text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.msg-time {
+  display: block;
+  font-size: 0.68rem;
+  margin-top: 0.25rem;
+  opacity: 0.55;
+  text-align: right;
+}
+
+/* Label / warning badge */
+.msg-label {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  margin-top: 0.3rem;
+  margin-left: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.label-real {
+  background: #0d2d1a;
+  color: #4ade80;
+  border: 1px solid #166534;
+}
+
+.label-spam {
+  background: #2d1a00;
+  color: #fb923c;
+  border: 1px solid #92400e;
+  animation: pulse 1.5s ease-in-out 2;
+}
+
+.label-phishing {
+  background: #2d0a0a;
+  color: #f87171;
+  border: 1px solid #991b1b;
+  animation: pulse 1s ease-in-out 3;
+}
+
+.label-pending {
+  background: #1a1a2e;
+  color: #94a3b8;
+  border: 1px solid #334155;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
