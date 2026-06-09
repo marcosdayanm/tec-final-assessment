@@ -10,7 +10,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MaxAbsScaler
 from sklearn.svm import LinearSVC
 
-from src.config import DEFAULT_CONSOLIDATED_DATASET, MODEL_PATH
+from src.config import DEFAULT_CONSOLIDATED_DATASET, DEFAULT_MODEL_PATH as MODEL_PATH
 from src.ml.features import FeatureBuilder
 
 
