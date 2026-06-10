@@ -243,3 +243,5 @@ frontend/.env.*.local
 # macOS
 .DS_Store
 **/.DS_Store
+
+chat_app.db
