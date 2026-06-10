@@ -7,22 +7,19 @@ interface Props {
 
 const LABEL_CONFIG: Record<
   ClassificationLabel,
-  { text: string; className: string; icon: string }
+  { text: string; className: string }
 > = {
   ham: {
-    text: "Mensaje normal",
+    text: "Normal",
     className: "label-ham",
-    icon: "✅",
   },
   spam: {
-    text: "Posible spam",
+    text: "Spam",
     className: "label-spam",
-    icon: "🚫",
   },
   smishing: {
-    text: "Posible smishing",
+    text: "Smishing",
     className: "label-smishing",
-    icon: "☠️",
   },
 };
 
@@ -41,10 +38,7 @@ export function MessageBubble({ message }: Props) {
         <p className="msg-text">{message.content}</p>
         <div className="msg-footer">
           {!isMe && showWarning && (
-            <span className={`msg-label ${label.className}`}>
-              <span className="msg-label__icon">{label.icon}</span>
-              {label.text}
-            </span>
+            <span className={`msg-label ${label.className}`}>{label.text}</span>
           )}
           <span className="msg-time">{formatTime(message.createdAt)}</span>
         </div>
