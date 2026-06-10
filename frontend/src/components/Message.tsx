@@ -12,17 +12,17 @@ const LABEL_CONFIG: Record<
   { text: string; className: string; Icon: ComponentType<IconProps> }
 > = {
   ham: {
-    text: "Mensaje normal",
+    text: "Normal",
     className: "label-ham",
     Icon: CheckIcon,
   },
   spam: {
-    text: "Posible spam",
+    text: "Spam",
     className: "label-spam",
     Icon: BanIcon,
   },
   smishing: {
-    text: "Posible smishing",
+    text: "Smishing",
     className: "label-smishing",
     Icon: AlertTriangleIcon,
   },
