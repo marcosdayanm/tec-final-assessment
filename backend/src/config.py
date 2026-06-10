@@ -10,6 +10,12 @@ class Settings:
     jwt_secret_key: str
     jwt_algorithm: str
     jwt_expire_minutes: int
+    ml_service_jwt_secret_key: str
+    ml_service_jwt_algorithm: str
+    ml_service_jwt_issuer: str
+    ml_service_jwt_audience: str
+    ml_service_jwt_subject: str
+    ml_service_jwt_expire_seconds: int
     ml_service_url: str
     ml_service_predict_path: str
     ml_service_timeout_seconds: float
@@ -28,6 +34,15 @@ class Settings:
             jwt_secret_key=os.getenv("JWT_SECRET_KEY", "change-this-secret-before-production"),
             jwt_algorithm=os.getenv("JWT_ALGORITHM", "HS256"),
             jwt_expire_minutes=int(os.getenv("JWT_EXPIRE_MINUTES", "60")),
+            ml_service_jwt_secret_key=os.getenv(
+                "ML_SERVICE_JWT_SECRET_KEY",
+                "change-this-ml-service-secret-before-production",
+            ),
+            ml_service_jwt_algorithm=os.getenv("ML_SERVICE_JWT_ALGORITHM", "HS256"),
+            ml_service_jwt_issuer=os.getenv("ML_SERVICE_JWT_ISSUER", "itchat-backend"),
+            ml_service_jwt_audience=os.getenv("ML_SERVICE_JWT_AUDIENCE", "itchat-ml-service"),
+            ml_service_jwt_subject=os.getenv("ML_SERVICE_JWT_SUBJECT", "itchat-backend-service"),
+            ml_service_jwt_expire_seconds=int(os.getenv("ML_SERVICE_JWT_EXPIRE_SECONDS", "60")),
             ml_service_url=os.getenv("ML_SERVICE_URL", "http://127.0.0.1:8001"),
             ml_service_predict_path=os.getenv("ML_SERVICE_PREDICT_PATH", "/predict"),
             ml_service_timeout_seconds=float(os.getenv("ML_SERVICE_TIMEOUT_SECONDS", "5")),

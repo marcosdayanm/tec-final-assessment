@@ -2,9 +2,13 @@ from dataclasses import dataclass
 
 import httpx
 
+from src.config import Settings
+from src.service_auth import create_ml_service_token
+
 
 @dataclass
 class SMSModelClient:
+    settings: Settings
     base_url: str
     predict_path: str
     timeout_seconds: float
@@ -18,7 +22,11 @@ class SMSModelClient:
 
     async def predict_label(self, message: str) -> str:
         try:
-            response = await self._client.post(self.predict_path, json={"message": message})
+            response = await self._client.post(
+                self.predict_path,
+                json={"message": message},
+                headers=self._build_auth_headers(),
+            )
             response.raise_for_status()
             payload = response.json()
         except (httpx.HTTPError, ValueError):
@@ -31,3 +39,7 @@ class SMSModelClient:
 
     async def aclose(self) -> None:
         await self._client.aclose()
+
+    def _build_auth_headers(self) -> dict[str, str]:
+        token = create_ml_service_token(self.settings)
+        return {"Authorization": f"Bearer {token}"}

@@ -16,6 +16,11 @@ DEFAULT_DATASET_PATH = DATA_DIR / "dataset.csv"
 class Settings:
     model_path: Path
     dataset_path: Path
+    service_jwt_secret_key: str
+    service_jwt_algorithm: str
+    service_jwt_issuer: str
+    service_jwt_audience: str
+    service_jwt_subject: str
     host: str
     port: int
     tls_cert_file: str | None
@@ -27,6 +32,14 @@ class Settings:
         return cls(
             model_path=Path(os.getenv("MODEL_PATH", str(DEFAULT_MODEL_PATH))).expanduser(),
             dataset_path=Path(os.getenv("DATASET_PATH", str(DEFAULT_DATASET_PATH))).expanduser(),
+            service_jwt_secret_key=os.getenv(
+                "SERVICE_JWT_SECRET_KEY",
+                "change-this-ml-service-secret-before-production",
+            ),
+            service_jwt_algorithm=os.getenv("SERVICE_JWT_ALGORITHM", "HS256"),
+            service_jwt_issuer=os.getenv("SERVICE_JWT_ISSUER", "itchat-backend"),
+            service_jwt_audience=os.getenv("SERVICE_JWT_AUDIENCE", "itchat-ml-service"),
+            service_jwt_subject=os.getenv("SERVICE_JWT_SUBJECT", "itchat-backend-service"),
             host=os.getenv("HOST", "127.0.0.1"),
             port=int(os.getenv("PORT", "8001")),
             tls_cert_file=os.getenv("TLS_CERT_FILE"),

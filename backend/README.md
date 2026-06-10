@@ -24,6 +24,12 @@ Variables principales:
 - `JWT_SECRET_KEY`: clave para firmar tokens
 - `JWT_ALGORITHM`: algoritmo JWT
 - `JWT_EXPIRE_MINUTES`: duración del token
+- `ML_SERVICE_JWT_SECRET_KEY`: secreto compartido para autenticar llamadas backend -> ML service
+- `ML_SERVICE_JWT_ALGORITHM`: algoritmo JWT para el token de servicio
+- `ML_SERVICE_JWT_ISSUER`: emisor esperado por el ML service
+- `ML_SERVICE_JWT_AUDIENCE`: audiencia esperada por el ML service
+- `ML_SERVICE_JWT_SUBJECT`: subject del backend frente al ML service
+- `ML_SERVICE_JWT_EXPIRE_SECONDS`: expiración corta del token de servicio
 - `ML_SERVICE_URL`: URL base del servicio ML
 - `ML_SERVICE_PREDICT_PATH`: ruta del endpoint de predicción
 - `ML_SERVICE_TIMEOUT_SECONDS`: timeout para la llamada HTTP al servicio ML
@@ -39,6 +45,13 @@ Variables principales:
 ```bash
 cd backend
 uv run main
+```
+
+Arranque preparado para OpenStack:
+
+```bash
+cd backend
+./run-openstack.sh
 ```
 
 El backend espera que el servicio ML esté levantado en la URL configurada por `ML_SERVICE_URL`.

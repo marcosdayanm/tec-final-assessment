@@ -12,6 +12,16 @@ import type {
 } from "../types";
 import { frontendConfig } from "../config";
 
+export class ApiError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
 function buildHeaders(token?: string): HeadersInit {
   return {
     "Content-Type": "application/json",
@@ -23,9 +33,20 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const response = await fetch(`${frontendConfig.apiBaseUrl}${path}`, options);
   if (!response.ok) {
     const errorPayload = (await response.json().catch(() => null)) as { detail?: string } | null;
-    throw new Error(errorPayload?.detail ?? "No se pudo completar la solicitud.");
+    throw new ApiError(
+      errorPayload?.detail ?? "No se pudo completar la solicitud.",
+      response.status,
+    );
   }
   return (await response.json()) as T;
+}
+
+export function isExpiredTokenError(error: unknown): boolean {
+  return (
+    error instanceof ApiError &&
+    error.status === 401 &&
+    error.message === "Invalid or expired token."
+  );
 }
 
 export async function login(credentials: AuthFormValues): Promise<AuthResponse> {

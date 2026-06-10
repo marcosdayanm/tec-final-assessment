@@ -58,6 +58,7 @@ class ApplicationRuntime:
         await ensure_database_exists(self.settings.database_url)
         await init_db(self.async_engine)
         self.model_client = SMSModelClient(
+            settings=self.settings,
             base_url=self.settings.ml_service_url,
             predict_path=self.settings.ml_service_predict_path,
             timeout_seconds=self.settings.ml_service_timeout_seconds,

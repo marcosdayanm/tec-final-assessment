@@ -19,6 +19,11 @@ cp .env.example .env
 
 - `MODEL_PATH`: ruta del artefacto `.pkl`
 - `DATASET_PATH`: ruta del dataset CSV
+- `SERVICE_JWT_SECRET_KEY`: secreto compartido para validar llamadas del backend
+- `SERVICE_JWT_ALGORITHM`: algoritmo JWT del token de servicio
+- `SERVICE_JWT_ISSUER`: issuer esperado del backend
+- `SERVICE_JWT_AUDIENCE`: audience esperado para este servicio
+- `SERVICE_JWT_SUBJECT`: subject esperado del backend
 - `HOST`: host de arranque
 - `PORT`: puerto del servicio
 - `TLS_CERT_FILE`: certificado TLS opcional
@@ -38,9 +43,18 @@ cd ml-service
 uv run main
 ```
 
+Arranque preparado para OpenStack:
+
+```bash
+cd ml-service
+./run-openstack.sh
+```
+
 ## Endpoint
 
 - `POST /predict`
+
+Este endpoint requiere `Authorization: Bearer <jwt>` emitido por el backend.
 
 Body:
 

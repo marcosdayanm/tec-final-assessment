@@ -35,6 +35,11 @@ def client(model_path: Path) -> Iterator[TestClient]:
     test_settings = Settings(
         model_path=model_path,
         dataset_path=model_path.parent / "dataset.csv",
+        service_jwt_secret_key="test-ml-secret-key-with-32-bytes-minimum",
+        service_jwt_algorithm="HS256",
+        service_jwt_issuer="itchat-backend",
+        service_jwt_audience="itchat-ml-service",
+        service_jwt_subject="itchat-backend-service",
         host="127.0.0.1",
         port=8001,
         tls_cert_file=None,
