@@ -16,13 +16,24 @@ class UserCredentials(BaseModel):
     password: str = Field(min_length=8, max_length=128)
 
 
+class RegisterRequest(BaseModel):
+    username: str = Field(min_length=3, max_length=50, pattern=r"^[A-Za-z0-9_]+$")
+    password: str = Field(min_length=8, max_length=128)
+    email: str = Field(min_length=5, max_length=255, pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+    full_name: str = Field(min_length=1, max_length=120)
+    bio: str | None = Field(default=None, max_length=2000)
+    avatar_url: str | None = Field(default=None, max_length=500)
+
+
 class UserSummary(BaseModel):
     id: int
     username: str
+    full_name: str
+    avatar_url: str | None
 
     @classmethod
     def from_user(cls, user: "User") -> "UserSummary":
-        return cls(id=user.id, username=user.username)
+        return cls(id=user.id, username=user.username, full_name=user.full_name, avatar_url=user.avatar_url)
 
 
 class AuthResponse(BaseModel):

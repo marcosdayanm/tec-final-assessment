@@ -1,4 +1,6 @@
+import type { ComponentType } from "react";
 import type { ClassificationLabel, UiMessage } from "../types";
+import { AlertTriangleIcon, BanIcon, CheckIcon, type IconProps } from "./icons";
 import "./Message.css";
 
 interface Props {
@@ -7,19 +9,22 @@ interface Props {
 
 const LABEL_CONFIG: Record<
   ClassificationLabel,
-  { text: string; className: string }
+  { text: string; className: string; Icon: ComponentType<IconProps> }
 > = {
   ham: {
     text: "Normal",
     className: "label-ham",
+    Icon: CheckIcon,
   },
   spam: {
     text: "Spam",
     className: "label-spam",
+    Icon: BanIcon,
   },
   smishing: {
     text: "Smishing",
     className: "label-smishing",
+    Icon: AlertTriangleIcon,
   },
 };
 
@@ -30,6 +35,7 @@ function formatTime(dateValue: string) {
 export function MessageBubble({ message }: Props) {
   const isMe = message.direction === "me";
   const label = LABEL_CONFIG[message.classificationLabel];
+  const LabelIcon = label.Icon;
   const showWarning = message.classificationLabel === "spam" || message.classificationLabel === "smishing";
 
   return (
@@ -38,7 +44,12 @@ export function MessageBubble({ message }: Props) {
         <p className="msg-text">{message.content}</p>
         <div className="msg-footer">
           {!isMe && showWarning && (
-            <span className={`msg-label ${label.className}`}>{label.text}</span>
+            <span className={`msg-label ${label.className}`}>
+              <span className="msg-label__icon">
+                <LabelIcon size={13} />
+              </span>
+              {label.text}
+            </span>
           )}
           <span className="msg-time">{formatTime(message.createdAt)}</span>
         </div>

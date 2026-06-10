@@ -6,8 +6,12 @@ import {
   searchUsers,
   sendMessage,
 } from "../api/chat";
+import { Avatar } from "../components/Avatar";
 import { ChatWindow } from "../components/ChatWindow";
+import { LogoutIcon, ShieldIcon } from "../components/icons";
+import { ThemeToggle } from "../components/ThemeToggle";
 import { useRealtimeMessages } from "../hooks/useRealtimeMessages";
+import { useTheme } from "../hooks/useTheme";
 import type {
   ConversationDetail,
   ConversationSummary,
@@ -49,9 +53,13 @@ function formatMessage(message: MessageDto, currentUserId: number): UiMessage {
 }
 
 export function Dashboard({ user, onLogout }: Props) {
+  const { theme } = useTheme();
   const [conversations, setConversations] = useState<UiConversation[]>([]);
-  const [activeConversationId, setActiveConversationId] = useState<number | null>(null);
-  const [activeConversationDetail, setActiveConversationDetail] = useState<ConversationDetail | null>(null);
+  const [activeConversationId, setActiveConversationId] = useState<
+    number | null
+  >(null);
+  const [activeConversationDetail, setActiveConversationDetail] =
+    useState<ConversationDetail | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<UserSummary[]>([]);
   const [showSearchPanel, setShowSearchPanel] = useState(false);
@@ -63,30 +71,40 @@ export function Dashboard({ user, onLogout }: Props) {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const activeConversation = useMemo(
-    () => conversations.find((conversation) => conversation.conversationId === activeConversationId) ?? null,
-    [conversations, activeConversationId]
+    () =>
+      conversations.find(
+        (conversation) => conversation.conversationId === activeConversationId,
+      ) ?? null,
+    [conversations, activeConversationId],
   );
 
   const activeMessages = useMemo(() => {
     if (!activeConversationDetail) {
       return [];
     }
-    return activeConversationDetail.messages.map((message) => formatMessage(message, user.id));
+    return activeConversationDetail.messages.map((message) =>
+      formatMessage(message, user.id),
+    );
   }, [activeConversationDetail, user.id]);
 
-  const upsertConversation = (conversationSummary: ConversationSummary, incrementUnread: boolean) => {
+  const upsertConversation = (
+    conversationSummary: ConversationSummary,
+    incrementUnread: boolean,
+  ) => {
     const formattedConversation = formatConversation(conversationSummary);
     setConversations((previousConversations) => {
       const existingConversation = previousConversations.find(
-        (conversation) => conversation.conversationId === formattedConversation.conversationId
+        (conversation) =>
+          conversation.conversationId === formattedConversation.conversationId,
       );
 
       const nextUnreadCount =
-        incrementUnread && activeConversationId !== formattedConversation.conversationId
+        incrementUnread &&
+        activeConversationId !== formattedConversation.conversationId
           ? (existingConversation?.unreadCount ?? 0) + 1
           : activeConversationId === formattedConversation.conversationId
             ? 0
-            : existingConversation?.unreadCount ?? 0;
+            : (existingConversation?.unreadCount ?? 0);
 
       const mergedConversation: UiConversation = {
         ...formattedConversation,
@@ -94,7 +112,8 @@ export function Dashboard({ user, onLogout }: Props) {
       };
 
       const remainingConversations = previousConversations.filter(
-        (conversation) => conversation.conversationId !== formattedConversation.conversationId
+        (conversation) =>
+          conversation.conversationId !== formattedConversation.conversationId,
       );
       return [mergedConversation, ...remainingConversations];
     });
@@ -107,22 +126,27 @@ export function Dashboard({ user, onLogout }: Props) {
       setConversations((previousConversations) =>
         response.conversations.map((conversation) => {
           const existingConversation = previousConversations.find(
-            (item) => item.conversationId === conversation.conversation_id
+            (item) => item.conversationId === conversation.conversation_id,
           );
           return {
             ...formatConversation(conversation),
             unreadCount:
-              existingConversation && existingConversation.conversationId !== activeConversationId
+              existingConversation &&
+              existingConversation.conversationId !== activeConversationId
                 ? existingConversation.unreadCount
                 : 0,
           };
-        })
+        }),
       );
       if (activeConversationId === null && response.conversations.length > 0) {
         setActiveConversationId(response.conversations[0].conversation_id);
       }
     } catch (requestError) {
-      setSidebarError(requestError instanceof Error ? requestError.message : "No se pudieron cargar las conversaciones.");
+      setSidebarError(
+        requestError instanceof Error
+          ? requestError.message
+          : "No se pudieron cargar las conversaciones.",
+      );
     } finally {
       setIsLoadingConversations(false);
     }
@@ -132,17 +156,24 @@ export function Dashboard({ user, onLogout }: Props) {
     try {
       setDetailError("");
       setIsLoadingMessages(true);
-      const response = await fetchConversationDetail(user.token, conversationId);
+      const response = await fetchConversationDetail(
+        user.token,
+        conversationId,
+      );
       setActiveConversationDetail(response);
       setConversations((previousConversations) =>
         previousConversations.map((conversation) =>
           conversation.conversationId === conversationId
             ? { ...conversation, unreadCount: 0 }
-            : conversation
-        )
+            : conversation,
+        ),
       );
     } catch (requestError) {
-      setDetailError(requestError instanceof Error ? requestError.message : "No se pudieron cargar los mensajes.");
+      setDetailError(
+        requestError instanceof Error
+          ? requestError.message
+          : "No se pudieron cargar los mensajes.",
+      );
     } finally {
       setIsLoadingMessages(false);
     }
@@ -196,15 +227,20 @@ export function Dashboard({ user, onLogout }: Props) {
           other_participant: event.sender,
           last_message: event.message,
         },
-        true
+        true,
       );
 
       if (event.conversation_id === activeConversationId) {
         setActiveConversationDetail((previousDetail) => {
-          if (!previousDetail || previousDetail.conversation_id !== event.conversation_id) {
+          if (
+            !previousDetail ||
+            previousDetail.conversation_id !== event.conversation_id
+          ) {
             return previousDetail;
           }
-          const messageAlreadyExists = previousDetail.messages.some((message) => message.id === event.message.id);
+          const messageAlreadyExists = previousDetail.messages.some(
+            (message) => message.id === event.message.id,
+          );
           if (messageAlreadyExists) {
             return previousDetail;
           }
@@ -232,7 +268,11 @@ export function Dashboard({ user, onLogout }: Props) {
       setSearchQuery("");
       setSearchResults([]);
     } catch (requestError) {
-      setSidebarError(requestError instanceof Error ? requestError.message : "No se pudo crear la conversación.");
+      setSidebarError(
+        requestError instanceof Error
+          ? requestError.message
+          : "No se pudo crear la conversación.",
+      );
     } finally {
       setIsCreatingConversation(false);
     }
@@ -249,7 +289,10 @@ export function Dashboard({ user, onLogout }: Props) {
     });
 
     setActiveConversationDetail((previousDetail) => {
-      if (!previousDetail || previousDetail.conversation_id !== activeConversationId) {
+      if (
+        !previousDetail ||
+        previousDetail.conversation_id !== activeConversationId
+      ) {
         return previousDetail;
       }
       return {
@@ -258,36 +301,54 @@ export function Dashboard({ user, onLogout }: Props) {
       };
     });
 
-    setConversations((previousConversations) =>
-      [
-        ...previousConversations
-          .map((conversation) =>
-            conversation.conversationId === activeConversationId
-              ? {
-                  ...conversation,
-                  lastMessage: response.message.content,
-                  lastMessageLabel: response.message.classification_label,
-                  lastMessageAt: response.message.created_at,
-                }
-              : conversation
-          )
-          .filter((conversation) => conversation.conversationId === activeConversationId),
-        ...previousConversations.filter((conversation) => conversation.conversationId !== activeConversationId),
-      ]
-    );
+    setConversations((previousConversations) => [
+      ...previousConversations
+        .map((conversation) =>
+          conversation.conversationId === activeConversationId
+            ? {
+                ...conversation,
+                lastMessage: response.message.content,
+                lastMessageLabel: response.message.classification_label,
+                lastMessageAt: response.message.created_at,
+              }
+            : conversation,
+        )
+        .filter(
+          (conversation) =>
+            conversation.conversationId === activeConversationId,
+        ),
+      ...previousConversations.filter(
+        (conversation) => conversation.conversationId !== activeConversationId,
+      ),
+    ]);
   };
 
   return (
     <div className="dashboard">
       <aside className="sidebar">
         <div className="sidebar__header">
-          <div>
-            <p className="sidebar__title">ITChat</p>
-            <p className="sidebar__email">@{user.username}</p>
+          <div className="sidebar__brand">
+            <img
+              className="sidebar__brand-icon"
+              src={theme === "dark" ? "/Icon_Dark.png" : "/Icon_Light.png"}
+              alt=""
+            />
+            <div>
+              <p className="sidebar__title">ITChat</p>
+              <p className="sidebar__email">@{user.username}</p>
+            </div>
           </div>
-          <button className="sidebar__logout" onClick={() => setShowLogoutModal(true)} title="Cerrar sesión">
-            ↩
-          </button>
+          <div className="sidebar__header-actions">
+            <ThemeToggle />
+            <button
+              className="sidebar__logout"
+              onClick={() => setShowLogoutModal(true)}
+              title="Cerrar sesión"
+              aria-label="Cerrar sesión"
+            >
+              <LogoutIcon size={16} />
+            </button>
+          </div>
         </div>
 
         <div className="sidebar__search">
@@ -302,15 +363,19 @@ export function Dashboard({ user, onLogout }: Props) {
             <button
               className="sidebar__new-chat-btn"
               type="button"
-              onClick={() => setShowSearchPanel((currentValue) => !currentValue)}
+              onClick={() =>
+                setShowSearchPanel((currentValue) => !currentValue)
+              }
             >
-              Nuevo mensaje
+              Nueva conversación
             </button>
           </div>
           {showSearchPanel && (
             <div className="sidebar__search-results">
               {searchQuery.trim().length < 2 && (
-                <p className="sidebar__search-hint">Escribe al menos 2 caracteres para buscar usuarios.</p>
+                <p className="sidebar__search-hint">
+                  Escribe al menos 2 caracteres para buscar usuarios.
+                </p>
               )}
               {searchResults.map((result) => (
                 <button
@@ -320,12 +385,18 @@ export function Dashboard({ user, onLogout }: Props) {
                   onClick={() => void handleCreateConversation(result.id)}
                   disabled={isCreatingConversation}
                 >
-                  <span className="sidebar__search-result-name">{result.username}</span>
-                  <span className="sidebar__search-result-action">Abrir chat</span>
+                  <span className="sidebar__search-result-name">
+                    {result.username}
+                  </span>
+                  <span className="sidebar__search-result-action">
+                    Abrir chat
+                  </span>
                 </button>
               ))}
               {searchQuery.trim().length >= 2 && searchResults.length === 0 && (
-                <p className="sidebar__search-hint">No se encontraron usuarios.</p>
+                <p className="sidebar__search-hint">
+                  No se encontraron usuarios.
+                </p>
               )}
             </div>
           )}
@@ -333,25 +404,37 @@ export function Dashboard({ user, onLogout }: Props) {
         </div>
 
         <ul className="chat-list">
-          {isLoadingConversations && <li className="chat-list__empty">Cargando conversaciones...</li>}
+          {isLoadingConversations && (
+            <li className="chat-list__empty">Cargando conversaciones...</li>
+          )}
           {!isLoadingConversations && conversations.length === 0 && (
-            <li className="chat-list__empty">Todavía no tienes conversaciones.</li>
+            <li className="chat-list__empty">
+              Todavía no tienes conversaciones.
+            </li>
           )}
           {conversations.map((conversation) => (
             <li
               key={conversation.conversationId}
               className={`chat-list__item ${activeConversationId === conversation.conversationId ? "chat-list__item--active" : ""}`}
-              onClick={() => handleSelectConversation(conversation.conversationId)}
+              onClick={() =>
+                handleSelectConversation(conversation.conversationId)
+              }
             >
-              <div className="chat-list__avatar">
-                {conversation.contact.username.slice(0, 1).toUpperCase()}
-              </div>
+              <Avatar
+                className="chat-list__avatar"
+                name={conversation.contact.username}
+                url={conversation.contact.avatar_url}
+              />
               <div className="chat-list__info">
-                <p className="chat-list__name">{conversation.contact.username}</p>
+                <p className="chat-list__name">
+                  {conversation.contact.username}
+                </p>
                 <p className="chat-list__last">{conversation.lastMessage}</p>
               </div>
               {conversation.unreadCount > 0 && (
-                <span className="chat-list__badge">{conversation.unreadCount}</span>
+                <span className="chat-list__badge">
+                  {conversation.unreadCount}
+                </span>
               )}
             </li>
           ))}
@@ -371,24 +454,38 @@ export function Dashboard({ user, onLogout }: Props) {
           />
         ) : (
           <div className="main-empty">
-            <span className="main-empty__icon">🛡️</span>
+            <span className="main-empty__icon">
+              <ShieldIcon size={48} />
+            </span>
             <p className="main-empty__title">Selecciona un chat</p>
             <p className="main-empty__sub">
-              Busca un usuario y abre una conversación para empezar a enviar mensajes.
+              Busca un usuario y abre una conversación para empezar a enviar
+              mensajes.
             </p>
           </div>
         )}
       </main>
       {showLogoutModal && (
-        <div className="modal-backdrop" onClick={() => setShowLogoutModal(false)}>
+        <div
+          className="modal-backdrop"
+          onClick={() => setShowLogoutModal(false)}
+        >
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <p className="modal__title">¿Cerrar sesión?</p>
-            <p className="modal__body">¿Seguro que quieres salir de la sesión?</p>
+            <p className="modal__body">
+              ¿Seguro que quieres salir de la sesión?
+            </p>
             <div className="modal__actions">
-              <button className="modal__btn modal__btn--cancel" onClick={() => setShowLogoutModal(false)}>
+              <button
+                className="modal__btn modal__btn--cancel"
+                onClick={() => setShowLogoutModal(false)}
+              >
                 Cancelar
               </button>
-              <button className="modal__btn modal__btn--confirm" onClick={onLogout}>
+              <button
+                className="modal__btn modal__btn--confirm"
+                onClick={onLogout}
+              >
                 Cerrar sesión
               </button>
             </div>

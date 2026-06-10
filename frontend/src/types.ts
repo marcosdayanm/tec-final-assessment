@@ -4,6 +4,8 @@ export type MessageDirection = "me" | "other";
 export interface UserSummary {
   id: number;
   username: string;
+  full_name: string;
+  avatar_url: string | null;
 }
 
 export interface SessionUser extends UserSummary {
@@ -13,6 +15,13 @@ export interface SessionUser extends UserSummary {
 export interface AuthFormValues {
   username: string;
   password: string;
+}
+
+export interface RegisterFormValues extends AuthFormValues {
+  email: string;
+  full_name: string;
+  bio?: string;
+  avatar_url?: string;
 }
 
 export interface AuthResponse {
