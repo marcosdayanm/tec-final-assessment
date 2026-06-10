@@ -1,0 +1,34 @@
+import os
+from dataclasses import dataclass
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = BASE_DIR / "data"
+MODELS_DIR = DATA_DIR / "models"
+DEFAULT_MODEL_PATH = MODELS_DIR / "sms_linear_svm.pkl"
+DEFAULT_DATASET_PATH = DATA_DIR / "dataset.csv"
+
+
+@dataclass(frozen=True)
+class Settings:
+    model_path: Path
+    dataset_path: Path
+    host: str
+    port: int
+    tls_cert_file: str | None
+    tls_key_file: str | None
+
+    @classmethod
+    def from_env(cls) -> "Settings":
+        load_dotenv()
+        return cls(
+            model_path=Path(os.getenv("MODEL_PATH", str(DEFAULT_MODEL_PATH))).expanduser(),
+            dataset_path=Path(os.getenv("DATASET_PATH", str(DEFAULT_DATASET_PATH))).expanduser(),
+            host=os.getenv("HOST", "127.0.0.1"),
+            port=int(os.getenv("PORT", "8001")),
+            tls_cert_file=os.getenv("TLS_CERT_FILE"),
+            tls_key_file=os.getenv("TLS_KEY_FILE"),
+        )

@@ -17,7 +17,7 @@ from src.chat import (
 )
 from src.config import Settings
 from src.db import User, create_session_factory, ensure_database_exists, get_db, init_db
-from src.ml.predictor import SMSModelService
+from src.ml_client import SMSModelClient
 from src.realtime import ConnectionManager
 from src.schemas import (
     AuthResponse,
@@ -42,7 +42,7 @@ class ApplicationRuntime:
     async_engine: AsyncEngine
     session_maker: async_sessionmaker[AsyncSession]
     connection_manager: ConnectionManager
-    model_service: SMSModelService | None = None
+    model_client: SMSModelClient | None = None
 
     @classmethod
     def from_settings(cls, settings: Settings) -> "ApplicationRuntime":
@@ -57,7 +57,17 @@ class ApplicationRuntime:
     async def initialize(self) -> None:
         await ensure_database_exists(self.settings.database_url)
         await init_db(self.async_engine)
-        self.model_service = SMSModelService(self.settings.model_path)
+        self.model_client = SMSModelClient(
+            base_url=self.settings.ml_service_url,
+            predict_path=self.settings.ml_service_predict_path,
+            timeout_seconds=self.settings.ml_service_timeout_seconds,
+            fallback_label=self.settings.unclassified_label,
+        )
+
+    async def shutdown(self) -> None:
+        if self.model_client is not None:
+            await self.model_client.aclose()
+        await self.async_engine.dispose()
 
 
 application_runtime = ApplicationRuntime.from_settings(Settings.from_env())
@@ -67,7 +77,10 @@ application_runtime = ApplicationRuntime.from_settings(Settings.from_env())
 async def lifespan(application: FastAPI):
     await application_runtime.initialize()
     application.state.runtime = application_runtime
-    yield
+    try:
+        yield
+    finally:
+        await application_runtime.shutdown()
 
 
 app = FastAPI(
@@ -79,10 +92,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=list(application_runtime.settings.cors_allow_origins),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -221,10 +231,9 @@ async def send_message(
     if conversation is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversation not found.")
 
-    if runtime.model_service is None:
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Model service is not available.")
-
-    predicted_label = runtime.model_service.predict_label(payload.content)
+    predicted_label = runtime.settings.unclassified_label
+    if runtime.model_client is not None:
+        predicted_label = await runtime.model_client.predict_label(payload.content)
     stored_message = await create_message(db, conversation, current_user, payload.content, predicted_label)
     recipient_user = next(
         participant.user for participant in conversation.participants if participant.user_id != current_user.id

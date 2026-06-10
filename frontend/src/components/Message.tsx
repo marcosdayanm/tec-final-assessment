@@ -1,6 +1,6 @@
 import type { ComponentType } from "react";
 import type { ClassificationLabel, UiMessage } from "../types";
-import { AlertTriangleIcon, BanIcon, CheckIcon, type IconProps } from "./icons";
+import { AlertTriangleIcon, BanIcon, CheckIcon, InfoIcon, type IconProps } from "./icons";
 import "./Message.css";
 
 interface Props {
@@ -26,6 +26,11 @@ const LABEL_CONFIG: Record<
     className: "label-smishing",
     Icon: AlertTriangleIcon,
   },
+  unclassified: {
+    text: "Clasificacion no disponible",
+    className: "label-unclassified",
+    Icon: InfoIcon,
+  },
 };
 
 function formatTime(dateValue: string) {
@@ -36,14 +41,14 @@ export function MessageBubble({ message }: Props) {
   const isMe = message.direction === "me";
   const label = LABEL_CONFIG[message.classificationLabel];
   const LabelIcon = label.Icon;
-  const showWarning = message.classificationLabel === "spam" || message.classificationLabel === "smishing";
+  const showLabel = message.classificationLabel !== "ham";
 
   return (
     <div className={`msg-row ${isMe ? "msg-row--me" : "msg-row--other"}`}>
       <div className={`msg-bubble ${isMe ? "msg-bubble--me" : "msg-bubble--other"}`}>
         <p className="msg-text">{message.content}</p>
         <div className="msg-footer">
-          {!isMe && showWarning && (
+          {!isMe && showLabel && (
             <span className={`msg-label ${label.className}`}>
               <span className="msg-label__icon">
                 <LabelIcon size={13} />

@@ -10,8 +10,7 @@ import type {
   SendMessagePayload,
   UserSearchResponse,
 } from "../types";
-
-const API_BASE = import.meta.env.VITE_API_URL ?? "";
+import { frontendConfig } from "../config";
 
 function buildHeaders(token?: string): HeadersInit {
   return {
@@ -21,7 +20,7 @@ function buildHeaders(token?: string): HeadersInit {
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, options);
+  const response = await fetch(`${frontendConfig.apiBaseUrl}${path}`, options);
   if (!response.ok) {
     const errorPayload = (await response.json().catch(() => null)) as { detail?: string } | null;
     throw new Error(errorPayload?.detail ?? "No se pudo completar la solicitud.");
@@ -79,8 +78,8 @@ export async function sendMessage(token: string, payload: SendMessagePayload): P
 }
 
 export function buildWebSocketUrl(token: string): string {
-  if (import.meta.env.VITE_WS_URL) {
-    return `${import.meta.env.VITE_WS_URL}?token=${encodeURIComponent(token)}`;
+  if (frontendConfig.websocketUrl) {
+    return `${frontendConfig.websocketUrl}?token=${encodeURIComponent(token)}`;
   }
 
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";

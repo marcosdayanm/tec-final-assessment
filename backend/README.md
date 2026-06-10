@@ -1,6 +1,6 @@
 # Backend
 
-API de mensajería directa construida con FastAPI, SQLAlchemy y PostgreSQL. Cada mensaje se clasifica al momento de guardarse con el modelo entrenado en `data/models/sms_linear_svm.pkl`.
+API de mensajería directa construida con FastAPI, SQLAlchemy y PostgreSQL. Cada mensaje se clasifica al momento de guardarse llamando a un servicio ML externo.
 
 ## Requisitos
 
@@ -24,7 +24,11 @@ Variables principales:
 - `JWT_SECRET_KEY`: clave para firmar tokens
 - `JWT_ALGORITHM`: algoritmo JWT
 - `JWT_EXPIRE_MINUTES`: duración del token
-- `MODEL_PATH`: ruta del archivo `.pkl`
+- `ML_SERVICE_URL`: URL base del servicio ML
+- `ML_SERVICE_PREDICT_PATH`: ruta del endpoint de predicción
+- `ML_SERVICE_TIMEOUT_SECONDS`: timeout para la llamada HTTP al servicio ML
+- `UNCLASSIFIED_LABEL`: etiqueta de respaldo si la clasificación falla
+- `CORS_ALLOW_ORIGINS`: lista separada por comas con orígenes permitidos
 - `HOST`: host de arranque
 - `PORT`: puerto de arranque
 - `TLS_CERT_FILE`: certificado TLS opcional
@@ -36,6 +40,8 @@ Variables principales:
 cd backend
 uv run main
 ```
+
+El backend espera que el servicio ML esté levantado en la URL configurada por `ML_SERVICE_URL`.
 
 Para desarrollo con HTTPS, la opción recomendada es usar un reverse proxy como Caddy delante de Uvicorn.
 Si la base indicada en `DATABASE_URL` no existe y el motor es PostgreSQL, el backend intenta crearla al arrancar. Después crea las tablas del esquema automáticamente.

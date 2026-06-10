@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from src.db import Conversation, Message, User
 
 
-ClassificationLabel = Literal["ham", "spam", "smishing"]
+ClassificationLabel = Literal["ham", "spam", "smishing", "unclassified"]
 
 
 class UserCredentials(BaseModel):

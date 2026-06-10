@@ -10,7 +10,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MaxAbsScaler
 from sklearn.svm import LinearSVC
 
-from src.config import DEFAULT_CONSOLIDATED_DATASET, DEFAULT_MODEL_PATH as MODEL_PATH
+from src.config import Settings
 from src.ml.features import FeatureBuilder
 
 
@@ -18,6 +18,7 @@ SEED = 42
 
 
 def train_model() -> None:
+    settings = Settings.from_env()
     preprocessor = ColumnTransformer(
         transformers=[
             (
@@ -37,7 +38,7 @@ def train_model() -> None:
         ]
     )
 
-    dataset = pd.read_csv(DEFAULT_CONSOLIDATED_DATASET)
+    dataset = pd.read_csv(settings.dataset_path)
     X_train, X_test, y_train, y_test = train_test_split(
         dataset["TEXT"],
         dataset["LABEL"],
@@ -54,12 +55,12 @@ def train_model() -> None:
         "macro_f1": f1_score(y_test, predictions, average="macro"),
     }
 
-    MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with MODEL_PATH.open("wb") as file:
+    settings.model_path.parent.mkdir(parents=True, exist_ok=True)
+    with settings.model_path.open("wb") as file:
         pickle.dump(pipeline, file)
 
     print(classification_report(y_test, predictions, digits=4))
-    print(f"Saved trained model to {MODEL_PATH}")
+    print(f"Saved trained model to {settings.model_path}")
     print(f"Metrics: {metrics}")
 
 

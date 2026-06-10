@@ -1,0 +1,33 @@
+from dataclasses import dataclass
+
+import httpx
+
+
+@dataclass
+class SMSModelClient:
+    base_url: str
+    predict_path: str
+    timeout_seconds: float
+    fallback_label: str
+
+    def __post_init__(self) -> None:
+        self._client = httpx.AsyncClient(
+            base_url=self.base_url.rstrip("/"),
+            timeout=self.timeout_seconds,
+        )
+
+    async def predict_label(self, message: str) -> str:
+        try:
+            response = await self._client.post(self.predict_path, json={"message": message})
+            response.raise_for_status()
+            payload = response.json()
+        except (httpx.HTTPError, ValueError):
+            return self.fallback_label
+
+        label = payload.get("label")
+        if not isinstance(label, str) or not label.strip():
+            return self.fallback_label
+        return label
+
+    async def aclose(self) -> None:
+        await self._client.aclose()
