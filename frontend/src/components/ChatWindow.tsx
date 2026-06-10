@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { SessionUser, UiConversation, UiMessage } from "../types";
+import { Avatar } from "./Avatar";
 import { MessageBubble } from "./Message";
 import "./ChatWindow.css";
 
@@ -52,9 +53,11 @@ export function ChatWindow({
     <div className="chat-window">
       {/* Header */}
       <div className="chat-header">
-        <div className="chat-header__avatar">
-          {conversation.contact.username.slice(0, 1).toUpperCase()}
-        </div>
+        <Avatar
+          className="chat-header__avatar"
+          name={conversation.contact.username}
+          url={conversation.contact.avatar_url}
+        />
         <div>
           <p className="chat-header__name">{conversation.contact.username}</p>
           <span className="chat-header__status status--online">Conectado a la sesión de @{currentUser.username}</span>

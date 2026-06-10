@@ -6,6 +6,7 @@ import type {
   DirectConversationResponse,
   MessageCreatedEvent,
   MessageEnvelope,
+  RegisterFormValues,
   SendMessagePayload,
   UserSearchResponse,
 } from "../types";
@@ -35,7 +36,7 @@ export async function login(credentials: AuthFormValues): Promise<AuthResponse> 
   });
 }
 
-export async function register(credentials: AuthFormValues): Promise<AuthResponse> {
+export async function register(credentials: RegisterFormValues): Promise<AuthResponse> {
   return request<AuthResponse>("/v1/register", {
     method: "POST",
     headers: buildHeaders(),

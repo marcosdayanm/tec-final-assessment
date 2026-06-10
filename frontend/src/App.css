@@ -1,3 +1,49 @@
+/* Theme tokens. :root holds the dark theme (current look + fallback if JS fails).
+   [data-theme="light"] overrides only the neutral surfaces/text/borders. */
+:root {
+  --bg-base: #21252b;
+  --bg-surface: #24282f;
+  --bg-elevated: #282c34;
+  --bg-input: #21252b;
+  --bg-hover: #2c313a;
+  --bg-active: #323842;
+  --bg-avatar: #3a4150;
+  --bg-bubble-other: #2c313a;
+  --bg-card: #282c34;
+  --border: #31363f;
+  --border-strong: #3e4451;
+  --text-primary: #d7dae0;
+  --text-secondary: #abb2bf;
+  --text-muted: #828997;
+  --text-dim: #5c6370;
+  --text-dimmer: #4b515c;
+  --accent: #528bff;
+  --accent-hover: #3d6fe0;
+  --accent-blue-text: #61afef;
+  --modal-backdrop: rgba(0, 0, 0, 0.55);
+}
+
+[data-theme="light"] {
+  --bg-base: #f5f6fa;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f8f9fc;
+  --bg-input: #eef1f7;
+  --bg-hover: #eef0f6;
+  --bg-active: #dfe4f5;
+  --bg-avatar: #e2e6f0;
+  --bg-bubble-other: #eef1f7;
+  --bg-card: #ffffff;
+  --border: #e2e5ee;
+  --border-strong: #cdd3e1;
+  --text-primary: #1a1a2e;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+  --text-dimmer: #b6bfce;
+  --accent-blue-text: #1d4ed8;
+  --modal-backdrop: rgba(15, 23, 42, 0.4);
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -10,12 +56,13 @@ html, body, #root {
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: #0a0a14;
-  color: #e2e2f0;
+  background: var(--bg-base);
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 /* Scrollbar global */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #1e1e42; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--bg-active); border-radius: 3px; }

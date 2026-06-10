@@ -1,7 +1,7 @@
 .dashboard {
   display: flex;
   height: 100vh;
-  background: #0a0a14;
+  background: var(--bg-base);
   overflow: hidden;
 }
 
@@ -9,8 +9,8 @@
 .sidebar {
   width: 280px;
   min-width: 240px;
-  background: #0f0f1a;
-  border-right: 1px solid #1e1e30;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -18,23 +18,45 @@
 
 .sidebar__header {
   padding: 1.1rem 1rem;
-  border-bottom: 1px solid #1e1e30;
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.sidebar__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.sidebar__brand-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .sidebar__title {
   margin: 0;
   font-size: 1rem;
   font-weight: 700;
-  color: #e2e2f0;
+  color: var(--text-primary);
 }
 
 .sidebar__email {
   margin: 0.1rem 0 0;
   font-size: 0.73rem;
-  color: #475569;
+  color: var(--text-dim);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -42,25 +64,28 @@
 }
 
 .sidebar__logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
-  border: 1px solid #1e1e30;
+  border: 1px solid rgba(248, 113, 113, 0.4);
   border-radius: 8px;
-  color: #64748b;
-  font-size: 1rem;
-  padding: 0.3rem 0.5rem;
+  color: #f87171;
+  padding: 0.35rem 0.5rem;
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
   flex-shrink: 0;
 }
 
 .sidebar__logout:hover {
-  color: #f87171;
+  color: #fff;
+  background: #f87171;
   border-color: #f87171;
 }
 
 .sidebar__search {
   padding: 0.75rem 0.9rem;
-  border-bottom: 1px solid #1e1e30;
+  border-bottom: 1px solid var(--border);
 }
 
 .sidebar__search-row {
@@ -71,11 +96,11 @@
 
 .sidebar__search-input {
   width: 100%;
-  background: #1a1a2e;
-  border: 1px solid #2e2e48;
+  background: var(--bg-input);
+  border: 1px solid var(--border-strong);
   border-radius: 8px;
   padding: 0.45rem 0.75rem;
-  color: #64748b;
+  color: var(--text-primary);
   font-size: 0.85rem;
   outline: none;
   font-family: inherit;
@@ -85,7 +110,7 @@
 .sidebar__new-chat-btn {
   border: 1px solid #3b82f6;
   background: rgba(59, 130, 246, 0.12);
-  color: #bfdbfe;
+  color: var(--accent-blue-text);
   border-radius: 8px;
   padding: 0.55rem 0.75rem;
   font-size: 0.8rem;
@@ -102,11 +127,11 @@
 
 .sidebar__search-result {
   text-align: left;
-  border: 1px solid #2e2e48;
-  background: #141425;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-card);
   border-radius: 10px;
   padding: 0.7rem 0.8rem;
-  color: #e2e2f0;
+  color: var(--text-primary);
   cursor: pointer;
 }
 
@@ -120,7 +145,7 @@
   display: block;
   margin-top: 0.15rem;
   font-size: 0.72rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
 }
 
 .sidebar__search-hint,
@@ -128,7 +153,7 @@
 .chat-list__empty {
   margin: 0;
   font-size: 0.76rem;
-  color: #64748b;
+  color: var(--text-muted);
 }
 
 .sidebar__error {
@@ -144,7 +169,7 @@
   overflow-y: auto;
   flex: 1;
   scrollbar-width: thin;
-  scrollbar-color: #1e1e42 transparent;
+  scrollbar-color: var(--bg-active) transparent;
 }
 
 .chat-list__item {
@@ -159,17 +184,17 @@
 }
 
 .chat-list__item:hover {
-  background: #1a1a2e;
+  background: var(--bg-hover);
 }
 
 .chat-list__item--active {
-  background: #1e1e42;
+  background: var(--bg-active);
 }
 
 .chat-list__avatar {
   width: 42px;
   height: 42px;
-  background: #1e1e2e;
+  background: var(--bg-avatar);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -187,7 +212,7 @@
   margin: 0;
   font-size: 0.88rem;
   font-weight: 600;
-  color: #e2e2f0;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -196,14 +221,14 @@
 .chat-list__last {
   margin: 0.1rem 0 0;
   font-size: 0.76rem;
-  color: #475569;
+  color: var(--text-dim);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .chat-list__badge {
-  background: #4f46e5;
+  background: var(--accent);
   color: #fff;
   font-size: 0.7rem;
   font-weight: 700;
@@ -232,13 +257,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #334155;
+  color: var(--text-dimmer);
   text-align: center;
   padding: 2rem;
 }
 
 .main-empty__icon {
-  font-size: 3rem;
+  display: flex;
   margin-bottom: 1rem;
   opacity: 0.4;
 }
@@ -247,7 +272,7 @@
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #475569;
+  color: var(--text-dim);
 }
 
 .main-empty__sub {
@@ -261,7 +286,7 @@
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--modal-backdrop);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -270,8 +295,8 @@
 }
 
 .modal {
-  background: #13131f;
-  border: 1px solid #1e1e30;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 2rem;
   width: 100%;
@@ -283,13 +308,13 @@
   margin: 0 0 0.5rem;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #e2e2f0;
+  color: var(--text-primary);
 }
 
 .modal__body {
   margin: 0 0 1.5rem;
   font-size: 0.88rem;
-  color: #64748b;
+  color: var(--text-muted);
   line-height: 1.5;
 }
 
@@ -311,12 +336,12 @@
 }
 
 .modal__btn--cancel {
-  background: #1e1e30;
-  color: #94a3b8;
+  background: var(--border);
+  color: var(--text-secondary);
 }
 
 .modal__btn--cancel:hover {
-  background: #2e2e48;
+  background: var(--border-strong);
 }
 
 .modal__btn--confirm {
@@ -339,6 +364,6 @@
     min-width: unset;
     max-height: 220px;
     border-right: none;
-    border-bottom: 1px solid #1e1e30;
+    border-bottom: 1px solid var(--border);
   }
 }

@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #0f0f1a;
+  background: var(--bg-surface);
 }
 
 /* Header */
@@ -11,15 +11,15 @@
   align-items: center;
   gap: 0.75rem;
   padding: 1rem 1.25rem;
-  background: #13131f;
-  border-bottom: 1px solid #1e1e30;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
 }
 
 .chat-header__avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #1e1e42;
+  background: var(--bg-active);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -30,7 +30,7 @@
 .chat-header__name {
   margin: 0;
   font-weight: 600;
-  color: #e2e2f0;
+  color: var(--text-primary);
   font-size: 0.95rem;
 }
 
@@ -40,7 +40,7 @@
 }
 
 .status--online { color: #4ade80; }
-.status--offline { color: #64748b; }
+.status--offline { color: var(--text-muted); }
 
 /* Messages area */
 .chat-messages {
@@ -51,12 +51,12 @@
   flex-direction: column;
   gap: 0.5rem;
   scrollbar-width: thin;
-  scrollbar-color: #1e1e42 transparent;
+  scrollbar-color: var(--bg-active) transparent;
 }
 
 .chat-empty {
   text-align: center;
-  color: #475569;
+  color: var(--text-dim);
   font-size: 0.85rem;
   margin-top: 3rem;
 }
@@ -76,17 +76,17 @@
   display: flex;
   gap: 0.6rem;
   padding: 0.875rem 1rem;
-  background: #13131f;
-  border-top: 1px solid #1e1e30;
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--border);
 }
 
 .chat-input {
   flex: 1;
-  background: #1a1a2e;
-  border: 1px solid #2e2e48;
+  background: var(--bg-input);
+  border: 1px solid var(--border-strong);
   border-radius: 12px;
   padding: 0.65rem 0.9rem;
-  color: #e2e2f0;
+  color: var(--text-primary);
   font-family: inherit;
   font-size: 0.92rem;
   resize: none;
@@ -97,11 +97,11 @@
 }
 
 .chat-input:focus {
-  border-color: #4f46e5;
+  border-color: var(--accent);
 }
 
 .chat-send-btn {
-  background: #4f46e5;
+  background: var(--accent);
   color: #fff;
   border: none;
   border-radius: 12px;
@@ -114,7 +114,7 @@
 }
 
 .chat-send-btn:hover:not(:disabled) {
-  background: #4338ca;
+  background: var(--accent-hover);
 }
 
 .chat-send-btn:active:not(:disabled) {

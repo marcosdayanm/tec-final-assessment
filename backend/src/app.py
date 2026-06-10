@@ -27,6 +27,7 @@ from src.schemas import (
     MessageCreateRequest,
     MessageCreatedEvent,
     MessageEnvelope,
+    RegisterRequest,
     UserCredentials,
     UsersResponse,
 )
@@ -129,7 +130,7 @@ async def health_check() -> dict[str, str]:
 
 @app.post("/v1/register", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
 async def register(
-    credentials: UserCredentials,
+    credentials: RegisterRequest,
     runtime: ApplicationRuntime = Depends(get_runtime),
     db: AsyncSession = Depends(get_session),
 ) -> AuthResponse:
@@ -137,7 +138,18 @@ async def register(
     if existing_user is not None:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Username already exists.")
 
-    user = User(username=credentials.username, password_hash=hash_password(credentials.password))
+    existing_email = await db.scalar(select(User).where(User.email == credentials.email))
+    if existing_email is not None:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already exists.")
+
+    user = User(
+        username=credentials.username,
+        password_hash=hash_password(credentials.password),
+        email=credentials.email,
+        full_name=credentials.full_name,
+        bio=credentials.bio,
+        avatar_url=credentials.avatar_url,
+    )
     db.add(user)
     await db.commit()
     await db.refresh(user)
