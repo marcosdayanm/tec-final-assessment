@@ -1,19 +1,13 @@
 [project]
-name = "tec-final-assessment"
+name = "ml-service"
 version = "0.1.0"
-description = "FastAPI chat backend with SMS message classification"
+description = "FastAPI ML inference and training service for ITChat"
 requires-python = ">=3.11"
 dependencies = [
-    "aiosqlite>=0.21.0",
     "fastapi>=0.116.0",
-    "greenlet>=3.2.3",
-    "httpx>=0.28.1",
     "pandas>=2.2.0",
-    "pyjwt>=2.10.0",
     "python-dotenv>=1.1.0",
-    "psycopg[binary]>=3.2.0",
     "scikit-learn>=1.7.0",
-    "sqlalchemy>=2.0.41",
     "uvicorn[standard]>=0.35.0",
 ]
 
@@ -23,6 +17,7 @@ train-sms-model = "src.scripts.train_model:main"
 
 [dependency-groups]
 dev = [
+    "httpx>=0.28.1",
     "pytest>=8.4.0",
 ]
 

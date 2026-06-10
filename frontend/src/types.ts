@@ -1,4 +1,4 @@
-export type ClassificationLabel = "ham" | "spam" | "smishing";
+export type ClassificationLabel = "ham" | "spam" | "smishing" | "unclassified";
 export type MessageDirection = "me" | "other";
 
 export interface UserSummary {

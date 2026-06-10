@@ -1,15 +1,7 @@
 import os
 from dataclasses import dataclass
-from pathlib import Path
 
 from dotenv import load_dotenv
-
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BASE_DIR / "data"
-MODELS_DIR = DATA_DIR / "models"
-DEFAULT_MODEL_PATH = MODELS_DIR / "sms_linear_svm.pkl"
-DEFAULT_CONSOLIDATED_DATASET = DATA_DIR / "dataset.csv"
 
 
 @dataclass(frozen=True)
@@ -18,7 +10,11 @@ class Settings:
     jwt_secret_key: str
     jwt_algorithm: str
     jwt_expire_minutes: int
-    model_path: Path
+    ml_service_url: str
+    ml_service_predict_path: str
+    ml_service_timeout_seconds: float
+    unclassified_label: str
+    cors_allow_origins: tuple[str, ...]
     tls_cert_file: str | None
     tls_key_file: str | None
     host: str
@@ -32,9 +28,22 @@ class Settings:
             jwt_secret_key=os.getenv("JWT_SECRET_KEY", "change-this-secret-before-production"),
             jwt_algorithm=os.getenv("JWT_ALGORITHM", "HS256"),
             jwt_expire_minutes=int(os.getenv("JWT_EXPIRE_MINUTES", "60")),
-            model_path=Path(os.getenv("MODEL_PATH", str(DEFAULT_MODEL_PATH))).expanduser(),
+            ml_service_url=os.getenv("ML_SERVICE_URL", "http://127.0.0.1:8001"),
+            ml_service_predict_path=os.getenv("ML_SERVICE_PREDICT_PATH", "/predict"),
+            ml_service_timeout_seconds=float(os.getenv("ML_SERVICE_TIMEOUT_SECONDS", "5")),
+            unclassified_label=os.getenv("UNCLASSIFIED_LABEL", "unclassified"),
+            cors_allow_origins=_split_csv_env(
+                os.getenv(
+                    "CORS_ALLOW_ORIGINS",
+                    "http://localhost:5173,http://127.0.0.1:5173",
+                )
+            ),
             tls_cert_file=os.getenv("TLS_CERT_FILE"),
             tls_key_file=os.getenv("TLS_KEY_FILE"),
             host=os.getenv("HOST", "127.0.0.1"),
             port=int(os.getenv("PORT", "8000")),
         )
+
+
+def _split_csv_env(raw_value: str) -> tuple[str, ...]:
+    return tuple(value.strip() for value in raw_value.split(",") if value.strip())

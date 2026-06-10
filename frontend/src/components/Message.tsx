@@ -24,6 +24,11 @@ const LABEL_CONFIG: Record<
     className: "label-smishing",
     icon: "☠️",
   },
+  unclassified: {
+    text: "Clasificacion no disponible",
+    className: "label-unclassified",
+    icon: "ℹ️",
+  },
 };
 
 function formatTime(dateValue: string) {
@@ -33,7 +38,7 @@ function formatTime(dateValue: string) {
 export function MessageBubble({ message }: Props) {
   const isMe = message.direction === "me";
   const label = LABEL_CONFIG[message.classificationLabel];
-  const showWarning = message.classificationLabel === "spam" || message.classificationLabel === "smishing";
+  const showLabel = message.classificationLabel !== "ham";
 
   return (
     <div className={`msg-row ${isMe ? "msg-row--me" : "msg-row--other"}`}>
@@ -42,8 +47,8 @@ export function MessageBubble({ message }: Props) {
         <span className="msg-time">{formatTime(message.createdAt)}</span>
       </div>
 
-      {!isMe && showWarning && (
-        <div className={`msg-label ${label.className} ${showWarning ? "msg-label--warn" : ""}`}>
+      {showLabel && (
+        <div className={`msg-label ${label.className}`}>
           <span className="msg-label__icon">{label.icon}</span>
           {label.text}
         </div>

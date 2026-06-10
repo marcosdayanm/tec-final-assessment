@@ -1,5 +1,12 @@
 # tec-final-assessment
 
-Proyecto con una API de mensajería directa y clasificación automática de mensajes SMS.
+Proyecto con:
 
-La documentación de instalación, configuración y uso del backend está en [`backend/README.md`](./backend/README.md).
+- `backend/`: API de mensajería directa
+- `ml-service/`: servicio FastAPI para entrenamiento e inferencia del modelo
+- `frontend/`: cliente web con Vite y React
+
+Documentación:
+
+- [`backend/README.md`](./backend/README.md)
+- [`ml-service/README.md`](./ml-service/README.md)

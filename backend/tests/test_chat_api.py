@@ -4,6 +4,14 @@ from starlette.websockets import WebSocketDisconnect
 from tests.helpers import auth_headers, register_user
 
 
+class UnavailableModelClient:
+    async def predict_label(self, message: str) -> str:
+        return "unclassified"
+
+    async def aclose(self) -> None:
+        return None
+
+
 def test_create_fetch_direct_conversation_and_list_only_user_conversations(client) -> None:
     alice = register_user(client, "alice")
     bob = register_user(client, "bob")
@@ -177,3 +185,22 @@ def test_http_send_websocket_receive_and_history_reload_match(client) -> None:
     assert response.status_code == 201
     assert delivered["message"]["id"] == history.json()["messages"][0]["id"]
     assert delivered["message"]["classification_label"] == history.json()["messages"][0]["classification_label"]
+
+
+def test_message_falls_back_to_unclassified_when_ml_service_is_unavailable(client) -> None:
+    client.app.state.runtime.model_client = UnavailableModelClient()
+    alice = register_user(client, "alice")
+    bob = register_user(client, "bob")
+    conversation = client.post(
+        f"/v1/conversations/direct/{bob['user']['id']}",
+        headers=auth_headers(alice["token"]),
+    ).json()["conversation"]
+
+    response = client.post(
+        "/v1/messages",
+        headers=auth_headers(alice["token"]),
+        json={"conversation_id": conversation["conversation_id"], "content": "service down test"},
+    )
+
+    assert response.status_code == 201
+    assert response.json()["message"]["classification_label"] == "unclassified"

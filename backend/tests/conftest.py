@@ -6,17 +6,20 @@ import pytest
 from fastapi.testclient import TestClient
 
 from src.app import ApplicationRuntime, app, application_runtime
-from src.config import BASE_DIR, Settings
+from src.config import Settings
 
 
 class StubModelService:
-    def predict_label(self, message: str) -> str:
+    async def predict_label(self, message: str) -> str:
         lowered = message.lower()
         if "bank" in lowered or "verify" in lowered:
             return "smishing"
         if "prize" in lowered or "winner" in lowered:
             return "spam"
         return "ham"
+
+    async def aclose(self) -> None:
+        return None
 
 
 @pytest.fixture
@@ -28,7 +31,11 @@ def client() -> Iterator[TestClient]:
             jwt_secret_key="test-secret-key-with-32-bytes-minimum",
             jwt_algorithm="HS256",
             jwt_expire_minutes=30,
-            model_path=BASE_DIR / "data" / "models" / "sms_linear_svm.pkl",
+            ml_service_url="http://ml-service.test",
+            ml_service_predict_path="/predict",
+            ml_service_timeout_seconds=1.0,
+            unclassified_label="unclassified",
+            cors_allow_origins=("http://localhost:5173",),
             tls_cert_file=None,
             tls_key_file=None,
             host="127.0.0.1",
@@ -41,7 +48,7 @@ def client() -> Iterator[TestClient]:
         app_module.application_runtime = test_runtime
         try:
             with TestClient(app) as test_client:
-                test_client.app.state.runtime.model_service = StubModelService()
+                test_client.app.state.runtime.model_client = StubModelService()
                 yield test_client
         finally:
             app_module.application_runtime = original_runtime
