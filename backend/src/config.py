@@ -55,7 +55,7 @@ class Settings:
             ),
             tls_cert_file=os.getenv("TLS_CERT_FILE"),
             tls_key_file=os.getenv("TLS_KEY_FILE"),
-            host=os.getenv("HOST", "127.0.0.1"),
+            host=os.getenv("HOST", "0.0.0.0"),
             port=int(os.getenv("PORT", "8000")),
         )
 

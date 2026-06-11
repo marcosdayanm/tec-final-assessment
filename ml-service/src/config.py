@@ -40,7 +40,7 @@ class Settings:
             service_jwt_issuer=os.getenv("SERVICE_JWT_ISSUER", "itchat-backend"),
             service_jwt_audience=os.getenv("SERVICE_JWT_AUDIENCE", "itchat-ml-service"),
             service_jwt_subject=os.getenv("SERVICE_JWT_SUBJECT", "itchat-backend-service"),
-            host=os.getenv("HOST", "127.0.0.1"),
+            host=os.getenv("HOST", "0.0.0.0"),
             port=int(os.getenv("PORT", "8001")),
             tls_cert_file=os.getenv("TLS_CERT_FILE"),
             tls_key_file=os.getenv("TLS_KEY_FILE"),
