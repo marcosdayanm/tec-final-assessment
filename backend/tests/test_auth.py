@@ -11,7 +11,15 @@ def test_register_success_returns_token_and_user(client) -> None:
 def test_register_rejects_duplicate_username(client) -> None:
     register_user(client, "alice")
 
-    response = client.post("/v1/register", json={"username": "alice", "password": "supersecure123"})
+    response = client.post(
+        "/v1/register",
+        json={
+            "username": "alice",
+            "password": "supersecure123",
+            "email": "alice-duplicate@example.com",
+            "full_name": "Alice Duplicate",
+        },
+    )
 
     assert response.status_code == 409
 

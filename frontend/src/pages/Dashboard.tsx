@@ -3,6 +3,7 @@ import {
   createDirectConversation,
   fetchConversationDetail,
   fetchConversations,
+  isExpiredTokenError,
   searchUsers,
   sendMessage,
 } from "../api/chat";
@@ -69,6 +70,14 @@ export function Dashboard({ user, onLogout }: Props) {
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const logoutIfTokenExpired = (error: unknown): boolean => {
+    if (isExpiredTokenError(error)) {
+      onLogout();
+      return true;
+    }
+    return false;
+  };
 
   const activeConversation = useMemo(
     () =>
@@ -142,6 +151,9 @@ export function Dashboard({ user, onLogout }: Props) {
         setActiveConversationId(response.conversations[0].conversation_id);
       }
     } catch (requestError) {
+      if (logoutIfTokenExpired(requestError)) {
+        return;
+      }
       setSidebarError(
         requestError instanceof Error
           ? requestError.message
@@ -169,6 +181,9 @@ export function Dashboard({ user, onLogout }: Props) {
         ),
       );
     } catch (requestError) {
+      if (logoutIfTokenExpired(requestError)) {
+        return;
+      }
       setDetailError(
         requestError instanceof Error
           ? requestError.message
@@ -208,7 +223,10 @@ export function Dashboard({ user, onLogout }: Props) {
       try {
         const response = await searchUsers(user.token, searchQuery.trim());
         setSearchResults(response.users);
-      } catch {
+      } catch (requestError) {
+        if (logoutIfTokenExpired(requestError)) {
+          return;
+        }
         setSearchResults([]);
       }
     }, 250);
@@ -220,6 +238,7 @@ export function Dashboard({ user, onLogout }: Props) {
 
   useRealtimeMessages({
     token: user.token,
+    onAuthError: onLogout,
     onMessageCreated: (event: MessageCreatedEvent) => {
       upsertConversation(
         {
@@ -268,6 +287,9 @@ export function Dashboard({ user, onLogout }: Props) {
       setSearchQuery("");
       setSearchResults([]);
     } catch (requestError) {
+      if (logoutIfTokenExpired(requestError)) {
+        return;
+      }
       setSidebarError(
         requestError instanceof Error
           ? requestError.message
@@ -283,10 +305,18 @@ export function Dashboard({ user, onLogout }: Props) {
       return;
     }
 
-    const response = await sendMessage(user.token, {
-      conversation_id: activeConversationId,
-      content,
-    });
+    let response;
+    try {
+      response = await sendMessage(user.token, {
+        conversation_id: activeConversationId,
+        content,
+      });
+    } catch (requestError) {
+      if (logoutIfTokenExpired(requestError)) {
+        return;
+      }
+      throw requestError;
+    }
 
     setActiveConversationDetail((previousDetail) => {
       if (

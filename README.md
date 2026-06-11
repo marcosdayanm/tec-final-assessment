@@ -10,3 +10,10 @@ Documentación:
 
 - [`backend/README.md`](./backend/README.md)
 - [`ml-service/README.md`](./ml-service/README.md)
+
+Scripts operativos:
+
+- [`backend/run-openstack.sh`](./backend/run-openstack.sh)
+- [`ml-service/run-openstack.sh`](./ml-service/run-openstack.sh)
+- [`frontend/run-openstack.sh`](./frontend/run-openstack.sh)
+- [`scripts/setup-postgres-openstack.sh`](./scripts/setup-postgres-openstack.sh)

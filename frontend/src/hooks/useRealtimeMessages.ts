@@ -5,21 +5,36 @@ import type { MessageCreatedEvent } from "../types";
 interface UseRealtimeMessagesOptions {
   token: string;
   onMessageCreated: (event: MessageCreatedEvent) => void;
+  onAuthError: () => void;
 }
 
-export function useRealtimeMessages({ token, onMessageCreated }: UseRealtimeMessagesOptions) {
+export function useRealtimeMessages({
+  token,
+  onMessageCreated,
+  onAuthError,
+}: UseRealtimeMessagesOptions) {
   const [connected, setConnected] = useState(false);
   const onMessageCreatedRef = useRef(onMessageCreated);
+  const onAuthErrorRef = useRef(onAuthError);
 
   useEffect(() => {
     onMessageCreatedRef.current = onMessageCreated;
   }, [onMessageCreated]);
 
   useEffect(() => {
+    onAuthErrorRef.current = onAuthError;
+  }, [onAuthError]);
+
+  useEffect(() => {
     const websocket = new WebSocket(buildWebSocketUrl(token));
 
     websocket.onopen = () => setConnected(true);
-    websocket.onclose = () => setConnected(false);
+    websocket.onclose = (event) => {
+      setConnected(false);
+      if (event.code === 4401 || event.reason === "Invalid or expired token.") {
+        onAuthErrorRef.current();
+      }
+    };
     websocket.onerror = () => setConnected(false);
     websocket.onmessage = (event) => {
       const messageCreatedEvent = parseRealtimeEvent(event.data as string);
