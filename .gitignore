@@ -245,3 +245,6 @@ frontend/.env.*.local
 **/.DS_Store
 
 chat_app.db
+
+
+openstack/
