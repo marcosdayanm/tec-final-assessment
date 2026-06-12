@@ -10,6 +10,7 @@ interface Props {
   onLogin: (user: SessionUser) => void;
 }
 
+// Medidor visual de fuerza de la contraseña: suma criterios (longitud, mayúsculas/minúsculas, dígitos, símbolos).
 function getPasswordStrength(password: string): {
   level: number;
   label: string;

@@ -10,6 +10,7 @@ export default function App() {
   const [user, setUser] = useState<SessionUser | null>(null);
 
   useEffect(() => {
+    // Al cargar, restaura la sesión guardada en localStorage para sobrevivir recargas.
     const serializedSession = window.localStorage.getItem(SESSION_STORAGE_KEY);
     if (!serializedSession) {
       return;

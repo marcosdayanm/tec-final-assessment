@@ -29,6 +29,7 @@ class Settings:
     @classmethod
     def from_env(cls) -> "Settings":
         load_dotenv()
+        # Lee la configuración desde variables de entorno (.env) con valores por defecto para desarrollo.
         return cls(
             database_url=os.getenv("DATABASE_URL", "postgresql+psycopg://postgres:postgres@localhost:5432/chat_app"),
             jwt_secret_key=os.getenv("JWT_SECRET_KEY", "change-this-secret-before-production"),

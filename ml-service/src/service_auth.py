@@ -5,6 +5,7 @@ from src.config import Settings
 
 
 def verify_service_token(token: str, settings: Settings) -> dict[str, str]:
+    # Valida firma, issuer y audience del token, y más abajo exige el subject esperado (solo el backend).
     try:
         payload = jwt.decode(
             token,

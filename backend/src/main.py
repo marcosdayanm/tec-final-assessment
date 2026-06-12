@@ -5,6 +5,7 @@ from src.config import Settings
 
 
 def main() -> None:
+    # Punto de entrada (uv run main): arranca Uvicorn con TLS opcional según el .env.
     settings = Settings.from_env()
     uvicorn.run(
         app,

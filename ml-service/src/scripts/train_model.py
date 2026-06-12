@@ -30,6 +30,7 @@ def train_model() -> None:
         ]
     )
 
+    # FeatureBuilder -> TF-IDF + features numéricas escaladas -> LinearSVC, todo en un pipeline serializable.
     pipeline: Pipeline = Pipeline(
         steps=[
             ("feature_builder", FeatureBuilder()),
@@ -39,6 +40,7 @@ def train_model() -> None:
     )
 
     dataset = pd.read_csv(settings.dataset_path)
+    # Split 80/20 estratificado por clase para conservar la proporción ham/spam/smishing en test.
     X_train, X_test, y_train, y_test = train_test_split(
         dataset["TEXT"],
         dataset["LABEL"],

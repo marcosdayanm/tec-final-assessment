@@ -44,6 +44,7 @@ class FeatureBuilder(BaseEstimator, TransformerMixin):
         return frame[self.FEATURE_COLUMNS]
 
     def _clean_text(self, text: str) -> str:
+        # Reemplaza URLs, emails y teléfonos por tokens: el modelo aprende el patrón, no el valor exacto.
         cleaned = str(text).lower()
         cleaned = self._URL_RE.sub(" __url__ ", cleaned)
         cleaned = self._EMAIL_RE.sub(" __email__ ", cleaned)

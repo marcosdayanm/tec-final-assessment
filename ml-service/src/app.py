@@ -48,6 +48,7 @@ def require_service_token(
     runtime: ApplicationRuntime = Depends(get_runtime),
     credentials: HTTPAuthorizationCredentials | None = Depends(service_bearer_scheme),
 ) -> dict[str, str]:
+    # Exige un JWT de servicio válido en cada petición; sin él, no se ejecuta el modelo.
     if credentials is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

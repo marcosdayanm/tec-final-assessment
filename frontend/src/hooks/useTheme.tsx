@@ -13,6 +13,7 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function resolveInitialTheme(): Theme {
+  // Usa el tema guardado; si no hay, respeta la preferencia del sistema (prefers-color-scheme).
   const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
   if (stored === "light" || stored === "dark") {
     return stored;

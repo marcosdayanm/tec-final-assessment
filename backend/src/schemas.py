@@ -8,6 +8,7 @@ if TYPE_CHECKING:
     from src.db import Conversation, Message, User
 
 
+# Etiquetas posibles del clasificador; 'unclassified' es el respaldo cuando el ML no responde.
 ClassificationLabel = Literal["ham", "spam", "smishing", "unclassified"]
 
 
@@ -117,6 +118,7 @@ class ConversationsResponse(BaseModel):
             ConversationSummary.from_conversation(conversation, current_user_id)
             for conversation in conversations
         ]
+        # Ordena las conversaciones por fecha del último mensaje, las más recientes primero.
         serialized_conversations.sort(
             key=lambda conversation_summary: (
                 conversation_summary.last_message is not None,

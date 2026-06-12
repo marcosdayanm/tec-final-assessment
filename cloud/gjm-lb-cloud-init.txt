@@ -1,0 +1,96 @@
+#cloud-config
+
+hostname: lb-gjm
+preserve_hostname: false
+
+ssh_pwauth: true
+
+users:
+  - name: jgm
+    groups: sudo,adm
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGEjNd7vCbltKpPgxCN1fB2/pdkjiKwsJzhM1i4Happdyd5X9STOS56wLm37D+EjjbHVSUDkrWHzlqF9Ief+y2sFemnCko0/KGD4FhpiG/Q60Rn9VgXpVwzMdkkn+H3HFCGQiNmiEA1sogltOPjdhP4E/J+ypHAOHCuN7BA5MkO9V23/fmEL71P3J5jjaBDwOGJHtz7ds9kS6PFdCuoiC3AvNNhY+ateVUxUjZG9Dg9SSbizT64mX0wr1Dv+Z+EJpBlOKR+jxPjm0YOdLlBpJXNdHXduHquViZV2wNAma/h8Bh7lUYyE44W2nnyY0FVgzLkvmzSBxqunwU8GgZ/WFh @infra3
+
+package_update: true
+package_upgrade: true
+
+packages:
+  - nginx
+  - curl
+  - ca-certificates
+
+write_files:
+  - path: /etc/nginx/conf.d/itchat.conf
+    permissions: "0644"
+    content: |
+      # anti-DDoS: limites de tasa y de conexiones por IP (contexto http)
+      limit_req_zone  $binary_remote_addr zone=api:10m  rate=10r/s;
+      limit_conn_zone $binary_remote_addr zone=conn:10m;
+
+      upstream itchat_backend {
+          least_conn;
+          server 172.20.70.171:8000 max_fails=3 fail_timeout=30s;
+          keepalive 32;
+      }
+
+      server {
+          listen 80;
+          server_name __LB_PUBLIC_HOST__;
+          return 301 https://$host$request_uri;
+      }
+
+      server {
+          listen 443 ssl;
+          server_name __LB_PUBLIC_HOST__;
+
+          ssl_certificate     __TLS_CERT_FILE__;
+          ssl_certificate_key __TLS_KEY_FILE__;
+
+          limit_conn conn 20;
+
+          location /health {
+              access_log off;
+              proxy_pass http://itchat_backend/health;
+              proxy_set_header Host $host;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+          }
+
+          location /v1/ws {
+              proxy_pass http://itchat_backend;
+              proxy_http_version 1.1;
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header Connection "upgrade";
+              proxy_set_header Host $host;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_read_timeout 3600s;
+          }
+
+          location / {
+              limit_req zone=api burst=20 nodelay;
+              proxy_pass http://itchat_backend;
+              proxy_http_version 1.1;
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_connect_timeout 5s;
+              proxy_send_timeout 60s;
+              proxy_read_timeout 60s;
+          }
+      }
+
+runcmd:
+  - rm -f /etc/nginx/sites-enabled/default
+  - nginx -t
+  - systemctl enable nginx
+  - systemctl restart nginx
+
+chpasswd:
+  list: |
+    jgm:__SYSTEM_PASSWORD__
+  expire: false

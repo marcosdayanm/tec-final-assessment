@@ -99,6 +99,7 @@ export async function sendMessage(token: string, payload: SendMessagePayload): P
 }
 
 export function buildWebSocketUrl(token: string): string {
+  // El JWT va como query param porque la API WebSocket del navegador no permite enviar headers propios.
   if (frontendConfig.websocketUrl) {
     return `${frontendConfig.websocketUrl}?token=${encodeURIComponent(token)}`;
   }

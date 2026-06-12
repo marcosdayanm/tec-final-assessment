@@ -37,6 +37,7 @@ async def get_user_conversation(session: AsyncSession, user_id: int, conversatio
 
 
 async def find_direct_conversation(session: AsyncSession, first_user_id: int, second_user_id: int) -> Conversation | None:
+    # Busca la conversación que tenga exactamente a esos dos participantes, para no crear duplicados.
     participant_ids = sorted([first_user_id, second_user_id])
     statement = (
         select(Conversation)
@@ -105,6 +106,7 @@ async def create_message(
 async def search_users(session: AsyncSession, query: str, current_user_id: int) -> list[User]:
     normalized_query = query.strip().lower()
     like_query = f"%{normalized_query}%"
+    # Ordena por relevancia: coincidencia exacta primero, luego por prefijo, luego cualquier coincidencia.
     rank = case(
         (func.lower(User.username) == normalized_query, 0),
         (func.lower(User.username).like(f"{normalized_query}%"), 1),

@@ -6,6 +6,7 @@ from src.config import Settings
 
 
 def create_ml_service_token(settings: Settings) -> str:
+    # Token de servicio de vida muy corta (segundos) para autenticar la llamada backend -> ML service.
     expires_at = datetime.now(UTC) + timedelta(seconds=settings.ml_service_jwt_expire_seconds)
     payload = {
         "sub": settings.ml_service_jwt_subject,

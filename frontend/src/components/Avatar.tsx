@@ -19,6 +19,7 @@ function getInitials(name: string): string {
 }
 
 function colorFromName(name: string): string {
+  // Color de fondo determinista a partir del nombre: el mismo usuario siempre tiene el mismo color.
   let hash = 0;
   for (let index = 0; index < name.length; index += 1) {
     hash = name.charCodeAt(index) + ((hash << 5) - hash);

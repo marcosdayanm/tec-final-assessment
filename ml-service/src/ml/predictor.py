@@ -9,6 +9,7 @@ class SMSModelService:
         self._model: Any = self.load_model()
 
     def load_model(self) -> Any:
+        # El .pkl contiene el pipeline completo (incluido el FeatureBuilder): mismo preprocesamiento que en entrenamiento.
         if not self.model_path.exists():
             raise FileNotFoundError(
                 f"Model artifact not found at {self.model_path}. Train the model first."

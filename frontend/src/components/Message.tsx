@@ -41,6 +41,7 @@ export function MessageBubble({ message }: Props) {
   const isMe = message.direction === "me";
   const label = LABEL_CONFIG[message.classificationLabel];
   const LabelIcon = label.Icon;
+  // El badge de amenaza solo aparece en mensajes recibidos (ver !isMe abajo) y nunca para ham.
   const showLabel = message.classificationLabel !== "ham";
 
   return (

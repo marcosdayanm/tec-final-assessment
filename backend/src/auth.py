@@ -10,6 +10,7 @@ from src.config import Settings
 
 
 def hash_password(password: str) -> str:
+    # PBKDF2-SHA256 con 600k iteraciones y salt aleatorio por usuario; se guarda como salt$digest.
     salt = secrets.token_hex(16)
     digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt.encode("utf-8"), 600_000)
     return f"{salt}${digest.hex()}"
@@ -18,6 +19,7 @@ def hash_password(password: str) -> str:
 def verify_password(password: str, stored_password_hash: str) -> bool:
     salt, expected_digest = stored_password_hash.split("$", maxsplit=1)
     actual_digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt.encode("utf-8"), 600_000).hex()
+    # compare_digest compara en tiempo constante para no filtrar información por el tiempo de respuesta.
     return hmac.compare_digest(actual_digest, expected_digest)
 
 

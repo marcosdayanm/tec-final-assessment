@@ -232,6 +232,7 @@ async def send_message(
     if conversation is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversation not found.")
 
+    # Clasifica el contenido con el ML service antes de persistir el mensaje.
     predicted_label = runtime.settings.unclassified_label
     if runtime.model_client is not None:
         predicted_label = await runtime.model_client.predict_label(payload.content)
@@ -249,6 +250,7 @@ async def websocket_messages(websocket: WebSocket, token: str = Query(...)) -> N
     try:
         token_payload = decode_access_token(token, websocket.app.state.runtime.settings)
     except HTTPException:
+        # 4401: código de cierre para token inválido/expirado; el frontend lo detecta y cierra sesión.
         await websocket.close(code=4401, reason="Invalid or expired token.")
         return
 
