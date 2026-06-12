@@ -14,6 +14,7 @@ export function useRealtimeMessages({
   onAuthError,
 }: UseRealtimeMessagesOptions) {
   const [connected, setConnected] = useState(false);
+  // Guardamos los callbacks en refs para no reabrir el WebSocket en cada render: solo depende del token.
   const onMessageCreatedRef = useRef(onMessageCreated);
   const onAuthErrorRef = useRef(onAuthError);
 

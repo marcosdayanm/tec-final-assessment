@@ -107,6 +107,7 @@ export function Dashboard({ user, onLogout }: Props) {
           conversation.conversationId === formattedConversation.conversationId,
       );
 
+      // Suma 1 al contador si el mensaje llega a un chat que no es el activo; si es el activo, queda en 0 (leído).
       const nextUnreadCount =
         incrementUnread &&
         activeConversationId !== formattedConversation.conversationId
@@ -196,6 +197,7 @@ export function Dashboard({ user, onLogout }: Props) {
 
   useEffect(() => {
     void loadConversations();
+    // Refresco periódico del sidebar; la mensajería en vivo del chat abierto llega por WebSocket.
     const conversationsInterval = window.setInterval(() => {
       void loadConversations();
     }, 15000);
@@ -219,6 +221,7 @@ export function Dashboard({ user, onLogout }: Props) {
       return;
     }
 
+    // Debounce: espera 250 ms tras dejar de teclear antes de llamar a la búsqueda de usuarios.
     const timeoutId = window.setTimeout(async () => {
       try {
         const response = await searchUsers(user.token, searchQuery.trim());
@@ -257,6 +260,7 @@ export function Dashboard({ user, onLogout }: Props) {
           ) {
             return previousDetail;
           }
+          // Evita duplicar el mensaje si ya estaba en el detalle (puede llegar por HTTP y por WebSocket).
           const messageAlreadyExists = previousDetail.messages.some(
             (message) => message.id === event.message.id,
           );

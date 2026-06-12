@@ -30,6 +30,7 @@ class SMSModelClient:
             response.raise_for_status()
             payload = response.json()
         except (httpx.HTTPError, ValueError):
+            # Si el ML service falla o tarda más que el timeout, no bloqueamos el chat: etiqueta de respaldo.
             return self.fallback_label
 
         label = payload.get("label")

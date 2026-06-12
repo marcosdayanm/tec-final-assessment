@@ -83,6 +83,7 @@ def create_session_factory(database_url: str) -> tuple[AsyncEngine, async_sessio
 
 
 async def ensure_database_exists(database_url: str) -> None:
+    # Crea la base en PostgreSQL si no existe, conectándose primero a la base administrativa 'postgres'.
     database_url_object = make_url(database_url)
     if database_url_object.drivername.startswith("sqlite"):
         return
@@ -103,6 +104,7 @@ async def ensure_database_exists(database_url: str) -> None:
 
 
 async def init_db(async_engine: AsyncEngine) -> None:
+    # Crea las tablas del esquema al arrancar (el proyecto aún no usa migraciones formales).
     async with async_engine.begin() as connection:
         await connection.run_sync(Base.metadata.create_all)
 

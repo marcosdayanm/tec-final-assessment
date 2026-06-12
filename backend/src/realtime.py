@@ -4,6 +4,7 @@ from fastapi import WebSocket
 
 
 class ConnectionManager:
+    # Un usuario puede tener varias pestañas abiertas: guardamos un conjunto de sockets por user_id.
     def __init__(self) -> None:
         self._connections: dict[int, set[WebSocket]] = defaultdict(set)
 

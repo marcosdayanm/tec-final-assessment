@@ -1,0 +1,60 @@
+#cloud-config
+
+hostname: frontend-gjm
+preserve_hostname: false
+
+ssh_pwauth: true
+
+users:
+  - name: jgm
+    groups: sudo,adm
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGEjNd7vCbltKpPgxCN1fB2/pdkjiKwsJzhM1i4Happdyd5X9STOS56wLm37D+EjjbHVSUDkrWHzlqF9Ief+y2sFemnCko0/KGD4FhpiG/Q60Rn9VgXpVwzMdkkn+H3HFCGQiNmiEA1sogltOPjdhP4E/J+ypHAOHCuN7BA5MkO9V23/fmEL71P3J5jjaBDwOGJHtz7ds9kS6PFdCuoiC3AvNNhY+ateVUxUjZG9Dg9SSbizT64mX0wr1Dv+Z+EJpBlOKR+jxPjm0YOdLlBpJXNdHXduHquViZV2wNAma/h8Bh7lUYyE44W2nnyY0FVgzLkvmzSBxqunwU8GgZ/WFh @infra3
+
+package_update: true
+package_upgrade: true
+
+packages:
+  - nginx
+  - git
+  - curl
+  - ca-certificates
+
+write_files:
+  - path: /etc/nginx/sites-available/default
+    permissions: "0644"
+    content: |
+      server {
+          listen 80 default_server;
+          listen [::]:80 default_server;
+          server_name _;
+          root /var/www/html;
+          index index.html;
+
+          location / {
+              try_files $uri $uri/ /index.html;
+          }
+      }
+
+runcmd:
+  - curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+  - apt-get install -y nodejs
+  - git clone https://github.com/marcosdayanm/tec-final-assessment/ /opt/tec-final-assessment || true
+  - bash -lc 'cat > /opt/tec-final-assessment/frontend/.env.production <<EOF
+    VITE_API_URL=__LB_PUBLIC_URL__
+    VITE_WS_URL=__LB_WS_URL__
+    EOF'
+  - cd /opt/tec-final-assessment/frontend && npm ci && npm run build
+  - rm -rf /var/www/html/*
+  - cp -r /opt/tec-final-assessment/frontend/dist/* /var/www/html/
+  - chown -R www-data:www-data /var/www/html
+  - systemctl enable nginx
+  - systemctl restart nginx
+
+chpasswd:
+  list: |
+    jgm:__SYSTEM_PASSWORD__
+  expire: false

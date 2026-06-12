@@ -26,6 +26,7 @@ export function ChatWindow({
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Auto-scroll al último mensaje cada vez que llega o se envía uno.
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
@@ -43,6 +44,7 @@ export function ChatWindow({
   };
 
   const handleKey = (e: React.KeyboardEvent) => {
+    // Enter envía; Shift+Enter inserta un salto de línea.
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       void handleSend();

@@ -29,6 +29,7 @@ class Settings:
     @classmethod
     def from_env(cls) -> "Settings":
         load_dotenv()
+        # Lee la configuración desde variables de entorno (.env) con valores por defecto.
         return cls(
             model_path=Path(os.getenv("MODEL_PATH", str(DEFAULT_MODEL_PATH))).expanduser(),
             dataset_path=Path(os.getenv("DATASET_PATH", str(DEFAULT_DATASET_PATH))).expanduser(),
